@@ -1,4 +1,4 @@
-import triangle from "./triangle.js";
+import Triangle from "./triangle.js";
 
 export default class Vector4 {
   constructor (x = 0 , y = 0 , z = 0 , w = 1) {
@@ -289,7 +289,7 @@ export class Matrix4 {
       [this.m[0][0], this.m[1][0], this.m[2][0], this.m[3][0]],
       [this.m[0][1], this.m[1][1], this.m[2][1], this.m[3][1]],
       [this.m[0][2], this.m[1][2], this.m[2][2], this.m[3][2]],
-      [this.m[0][3], this.m[1][3], this.m[2][3], this.m[3][3]],
+      [this.m[0][3], this.m[1][3], this.m[2][3], this.m[3][3]]
     ]);
   }
 }
@@ -318,7 +318,7 @@ export function viewSpace (camera, list) {
     return newList;
 }
 
-export function simpleProjection(list)
+/* export function simpleProjection(list)
 {
 	let newList = [];
 	list.forEach(v => {
@@ -328,7 +328,7 @@ export function simpleProjection(list)
 		));
 	});
 	return newList;
-}
+} */
 
 
 export class Quadrant
@@ -360,7 +360,61 @@ export function dist(planePos, planeNormal, point)
   return planeNormal.x * point.x + planeNormal.y * point.y + planeNormal.z * point.z - planeNormal.dot(planePos);
 }
 
-export function clipAgainstPlane(planePos, planeNormal, tr, out)
+export function clipAgainstPlane(planePos, planeNormal, pol, out)
+{
+  // check if polygon is a Triangle or Quadrant
+  if (pol.v4 !== undefined) {
+    return clipQuadAgainstPlane(planePos, planeNormal, pol, out);
+  }
+
+  return clipTrAgainstPlane(planePos, planeNormal, pol, out);
+}
+
+export function clipQuadAgainstPlane(planePos, planeNormal, quad, out)
+{
+  planeNormal = normalize(planeNormal);
+  let insidePoints = [];
+  let outsidePoints = [];
+
+  let d0 = dist(planePos, planeNormal, quad.v1);
+  let d1 = dist(planePos, planeNormal, quad.v2);
+  let d2 = dist(planePos, planeNormal, quad.v3);
+  let d3 = dist(planePos, planeNormal, quad.v4);
+
+  if (d0 >= 0)
+    insidePoints.push(quad.v1);
+  else
+    outsidePoints.push(quad.v1);
+
+  if (d1 >= 0)
+    insidePoints.push(quad.v2);
+  else
+    outsidePoints.push(quad.v2);
+
+  if (d2 >= 0)
+    insidePoints.push(quad.v3);
+  else
+    outsidePoints.push(quad.v3);
+
+  if (d3 >= 0)
+    insidePoints.push(quad.v4);
+  else
+    outsidePoints.push(quad.v4);
+
+  if (insidePoints.length == 4)
+  {
+    out.push(quad);
+    return 1;
+  }
+  else
+  {
+    let list = convertQuadrantToTriangles(quad);
+    clipTrAgainstPlane(planePos, planeNormal, list[0], out);
+    clipTrAgainstPlane(planePos, planeNormal, list[1], out);
+  }
+}
+
+export function clipTrAgainstPlane(planePos, planeNormal, tr, out)
 {
   planeNormal = normalize(planeNormal);
   let insidePoints = [];
@@ -399,7 +453,7 @@ export function clipAgainstPlane(planePos, planeNormal, tr, out)
   
   if (insidePoints.length == 1 && outsidePoints.length == 2)
   {
-    out.push(new triangle(
+    out.push(new Triangle(
       insidePoints[0],
         intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]),
         intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[1]))
@@ -409,10 +463,15 @@ export function clipAgainstPlane(planePos, planeNormal, tr, out)
 
   if (insidePoints.length == 2 && outsidePoints.length == 1)
   {
-    let tr1 = new triangle(insidePoints[0], insidePoints[1], intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]));
+    let tr1 = new Triangle(insidePoints[0], insidePoints[1], intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]));
     out.push(tr1);
-    out.push(new triangle(insidePoints[1], tr1.v3, intersectPlane(planePos, planeNormal, insidePoints[1], outsidePoints[0])));
+    out.push(new Triangle(insidePoints[1], tr1.v3, intersectPlane(planePos, planeNormal, insidePoints[1], outsidePoints[0])));
 
     return 2;
   }
+}
+
+export function convertQuadrantToTriangles(quad)
+{
+  return [new Triangle(quad.v1, quad.v2, quad.v3), new Triangle(quad.v1, quad.v3, quad.v4)];
 }

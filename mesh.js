@@ -35,7 +35,10 @@ export default class Mesh {
     if (this.faces[0] && this.faces[0].length === 3)
       return this.getTriangles(list)
     else
+    {
+      //return this.convertQuadListToTr(this.getQuadrant(list))
       return this.getQuadrant(list)
+    }
   }
 
   // list of the vertices
@@ -79,5 +82,19 @@ export default class Mesh {
     })
     // console.log(this.vertices)
     return newList
+  }
+
+  convertQuadrantToTriangles(quad)
+  {
+    return [new Triangle(quad.v1, quad.v2, quad.v3), new Triangle(quad.v1, quad.v3, quad.v4)];
+  }
+
+  convertQuadListToTr(list)
+  {
+    let newList = [];
+    list.forEach(quad => {
+      newList = newList.concat(this.convertQuadrantToTriangles(quad));
+    });
+    return newList;
   }
 }

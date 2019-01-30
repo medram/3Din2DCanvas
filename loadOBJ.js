@@ -1,10 +1,11 @@
 import Vector4 from "./math3d.js";
+import Configs from "./configs.js";
 
 export default class LoadOBJ {
     constructor(filename)
     {
         console.log("Loading OBJ file: " + filename);
-        this.data = this.readObjFile("http://127.0.0.1:5500/inc/Objs/" + filename);
+        this.data = this.readObjFile('http://' + Configs.server.host + ':' + Configs.server.port + "/inc/Objs/" + filename);
         this.vertices = [];
         this.faces = [];
         this.normales = [];

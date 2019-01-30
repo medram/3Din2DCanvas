@@ -19,14 +19,14 @@ function main()
 	let obj3 = new Entity('lowPolyTree.obj', new Vector3(6, 0, -7));
 	let obj4 = new Entity('pine.obj', new Vector3(-7, 0, -7));
 	let obj5 = new Entity('stall.obj', new Vector3(-2, 0, -12));
-	//let plane = new Entity('spaceship.obj', new Vector3(-2, 0, -1));
+	let plane = new Entity('plane2.obj', new Vector3(-2, 0, -1));
 
 	game.world.drawable.push(cube);
 	game.world.updateable.push(cube);
 	
-/* 	game.world.drawable.push(plane);
+	game.world.drawable.push(plane);
 	game.world.updateable.push(plane);
- */
+
 	game.world.drawable.push(obj);
 	game.world.updateable.push(obj);
 	

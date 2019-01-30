@@ -2,6 +2,7 @@ import { Camera } from "./camera.js";
 import * as util from './utils.js';
 import Vector4, { Vector3 } from "./math3d.js";
 import * as Math3d from "./math3d.js";
+import Configs from "./configs.js";
 
 export default class World
 {
@@ -13,8 +14,8 @@ export default class World
         this.camera = new Camera();
         this.polygonsList = [];
 
-        this.ZBuffer = [];
-        this.Frame = [];
+        //this.ZBuffer = [];
+        //this.Frame = [];
 
         this.init();
     }
@@ -29,11 +30,13 @@ export default class World
     {
         for (let i = 0; i < this.game.canvas.width; ++i)
         {
+            this.ZBuffer[i] = [];
             for (let j = 0; j < this.game.canvas.height; ++j)
             {
                 this.ZBuffer[i][j] = 0;
             }
         }
+        //console.log(this.ZBuffer);
     } */
 
     update()
@@ -54,7 +57,7 @@ export default class World
                 this.polygonsList = this.polygonsList.concat(obj.getPolygons());
             }
         });
-
+        
         //let newList = [];
         let out = [];
         let planeNormal;
@@ -76,42 +79,45 @@ export default class World
         this.polygonsList = out;
         out = [];
         
-        //-------------- left plane ---------------
-        planeNormal = projectionMatrix.reverse().multiVector(new Vector4(-1, 0, 0, 1));
-        this.polygonsList.forEach(pol => {
-            Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
-        });
-        
-        this.polygonsList = out;
-        out = [];
-
-        //-------------- right plane ---------------
-        planeNormal = projectionMatrix.reverse().multiVector(new Vector4(1, 0, 0, 1));
-        this.polygonsList.forEach(pol => {
-            Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
-        });
-
-        this.polygonsList = out;
-        out = [];
-
-        //-------------- top plane ---------------
-        planeNormal = projectionMatrix.reverse().multiVector(new Vector4(0, -1, 0, 1));
-        this.polygonsList.forEach(pol => {
-            Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
-        });
-
-        this.polygonsList = out;
-        out = [];
-
-        //-------------- buttom plane ---------------
-        planeNormal = projectionMatrix.reverse().multiVector(new Vector4(0, 1, 0, 1));
-        this.polygonsList.forEach(pol => {
-            Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
-        });
-
-        this.polygonsList = out;
-        out = [];
-
+        if (Configs.render.clipping)
+        {
+            //-------------- left plane ---------------
+            planeNormal = projectionMatrix.reverse().multiVector(new Vector4(-1, 0, 0, 1));
+            this.polygonsList.forEach(pol => {
+                Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
+            });
+            
+            this.polygonsList = out;
+            out = [];
+            
+            //-------------- right plane ---------------
+            planeNormal = projectionMatrix.reverse().multiVector(new Vector4(1, 0, 0, 1));
+            this.polygonsList.forEach(pol => {
+                Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
+            });
+            
+            this.polygonsList = out;
+            out = [];
+            
+            //-------------- top plane ---------------
+            planeNormal = projectionMatrix.reverse().multiVector(new Vector4(0, -1, 0, 1));
+            this.polygonsList.forEach(pol => {
+                Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
+            });
+            
+            this.polygonsList = out;
+            out = [];
+            
+            //-------------- buttom plane ---------------
+            planeNormal = projectionMatrix.reverse().multiVector(new Vector4(0, 1, 0, 1));
+            this.polygonsList.forEach(pol => {
+                Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
+            });
+            
+            this.polygonsList = out;
+            out = [];
+            
+        }
         //console.log('w=' + this.polygonsList[0].v1.w);
 
         //-------------- projection (Perspective projection) -------------
@@ -131,6 +137,14 @@ export default class World
             pol.v3.x /= pol.v3.w;
             pol.v3.y /= pol.v3.w;
             pol.v3.z /= pol.v3.w;
+
+            if (pol.v4 != undefined)
+            {
+                pol.v4 = projectionMatrix.multiVector(pol.v4);
+                pol.v4.x /= pol.v4.w;
+                pol.v4.y /= pol.v4.w;
+                pol.v4.z /= pol.v4.w;
+            }
 
             return pol;
         });

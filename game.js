@@ -7,26 +7,26 @@ import Configs from './configs.js';
 
 export default class Game {
     constructor(id) {
-        this.world = new World(this);
-        this.render = new Render(this);
-        this.input = new Input(this);
-
+        
         this.fps = 30;
         this.interval = 1000 / this.fps;
         
         this.now;
         this.then = Date.now();
         this.delta = 0;
-
+        
         this.timestamp = 0;
         this.frames = 0;
         this.oldTime = 0;
-
+        
         this.run = false;
-
+        
         this.center = 0;
-
+        
+        this.render = new Render(this);
+        this.input = new Input(this);
         this.init(id);
+        this.world = new World(this);
     }
 
     init(id)
@@ -40,7 +40,7 @@ export default class Game {
         this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
         this.ctx.fillStyle = Configs.render.fillStyle; // #8CC152 Green
         this.ctx.strokeStyle = Configs.render.strokeStyle;
-        this.ctx.font = '14px Arial';
+        this.ctx.font = Configs.render.font;
 
         // Capture inputs
         //window.addEventListener('keypress', this.input.capturePressKeys.bind(this.input));
