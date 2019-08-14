@@ -12,6 +12,6 @@ and there we go :D
 # Note:
 I'm using just the sorting algorithm for the trangles.
 
-![](https://raw.githubusercontent.com/medram/imgs/3d_1.png)
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/3d_1.png)
 
-![](https://raw.githubusercontent.com/medram/imgs/3d_2.png)
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/3d_2.png)
