@@ -9,7 +9,7 @@ let Configs = {
         clipping: false,
     },
     server: {
-        host: '127.0.0.1',
+        host: 'localhost',
         port: 5500,
     }
 };

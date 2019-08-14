@@ -18,6 +18,7 @@ export default class Input
 
     keypress(keyCode)
     {
+        //console.log(keyCode)
         return this.keysPressed.includes(keyCode);
     }
 
