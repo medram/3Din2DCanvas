@@ -5,6 +5,12 @@ export default Keyboard = {
     KEY_D: 100,
     KEY_Q: 113, */
     KEY_SPACE: 32,
+
+    KEY_ARROW_LEFT: 37,
+    KEY_ARROW_UP: 38,
+    KEY_ARROW_RIGHT: 39,
+    KEY_ARROW_DOWN: 40,
+
     KEY_A: 65,
     KEY_B: 66,
     KEY_C: 67,
@@ -31,7 +37,7 @@ export default Keyboard = {
     KEY_X: 88,
     KEY_Y: 89,
     KEY_Z: 90,
-    
+
     KEY_0: 96,
     KEY_1: 97,
     KEY_2: 98,

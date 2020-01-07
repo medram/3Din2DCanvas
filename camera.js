@@ -60,51 +60,51 @@ export class Camera extends Entity
         if (game.input.keypress(game.input.Keyboard.KEY_Z))
         {
             //console.log('Go front');
-            this.pos = this.pos.add(this.front.multi(this.speed));
+            this.pos = this.pos.add(this.front.multi(this.speed * 10));
         }
         // move back
         if (game.input.keypress(game.input.Keyboard.KEY_S))
         {
             //console.log('Go back');
-            this.pos = this.pos.sub(this.front.multi(this.speed));
+            this.pos = this.pos.sub(this.front.multi(this.speed * 10));
         }
 
         // move Right
         if (game.input.keypress(game.input.Keyboard.KEY_D))
         {
             //console.log('Go right');
-            this.pos = this.pos.add(Math3d.normalize(this.front.cross(this.up)).multi(this.speed));
+            this.pos = this.pos.add(Math3d.normalize(this.front.cross(this.up)).multi(this.speed * 10));
         }
         // move left
         if (game.input.keypress(game.input.Keyboard.KEY_Q))
         {
             //console.log('Go left');
-            this.pos = this.pos.sub(Math3d.normalize(this.front.cross(this.up)).multi(this.speed));
+            this.pos = this.pos.sub(Math3d.normalize(this.front.cross(this.up)).multi(this.speed * 10));
         }
 
         // for Camera direction
         // look up
-        if (game.input.keypress(game.input.Keyboard.KEY_8)) {
+        if (game.input.keypress(game.input.Keyboard.KEY_ARROW_UP)) {
             //console.log('pitch Rotate Camera');
-            this.pitch += this.speed * 10;
+            this.pitch += this.speed * 15;
         }
 
         // look down
-        if (game.input.keypress(game.input.Keyboard.KEY_5)) {
+        if (game.input.keypress(game.input.Keyboard.KEY_ARROW_DOWN)) {
             //console.log('pitch Rotate Camera');
-            this.pitch -= this.speed * 10;
+            this.pitch -= this.speed * 15;
         }
         
         // turn right
-        if (game.input.keypress(game.input.Keyboard.KEY_6)) {
+        if (game.input.keypress(game.input.Keyboard.KEY_ARROW_RIGHT)) {
             //console.log('yaw Rotate Camera');
-            this.yaw += this.speed * 10;
+            this.yaw += this.speed * 15;
         }
 
         // turn left
-        if (game.input.keypress(game.input.Keyboard.KEY_4)) {
+        if (game.input.keypress(game.input.Keyboard.KEY_ARROW_LEFT)) {
             //console.log('yaw Rotate Camera');
-            this.yaw -= this.speed * 10;
+            this.yaw -= this.speed * 15;
         }
 
         this.updateViewMatrix();

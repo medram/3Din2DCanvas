@@ -47,6 +47,7 @@ export default class Game {
         window.addEventListener('keydown', this.input.capturnDownKeys.bind(this.input));
         window.addEventListener('keyup', this.input.capturnUpKeys.bind(this.input));
 
+        // fixing canvas resizing window.
         window.onresize = (e) => {
             this.canvas.width = document.documentElement.clientWidth;
             this.canvas.height = document.documentElement.clientHeight-4;
@@ -59,7 +60,7 @@ export default class Game {
     }
 
     loop(callback) {
-        console.log('Game started');
+        console.log('Game has been started');
         this.run = true;
         
         if (typeof callback === 'function')
@@ -104,10 +105,8 @@ export default class Game {
 
     refresh()
     {
-        if (this.run === true)
-        {
+        if (this.run)
             window.requestAnimationFrame(this.callback);
-        }
     }
 
     stop()
