@@ -38,9 +38,6 @@ export default class Game {
 
         this.center = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
         this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
-        this.ctx.fillStyle = Configs.render.fillStyle; // #8CC152 Green
-        this.ctx.strokeStyle = Configs.render.strokeStyle;
-        this.ctx.font = Configs.render.font;
 
         // Capture inputs
         //window.addEventListener('keypress', this.input.capturePressKeys.bind(this.input));
@@ -53,9 +50,6 @@ export default class Game {
             this.canvas.height = document.documentElement.clientHeight-4;
             this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
             this.center = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
-            this.ctx.fillStyle = Configs.render.fillStyle; // #8CC152 Green
-            this.ctx.strokeStyle = Configs.render.strokeStyle;
-            this.ctx.font = Configs.render.font;
         };
     }
 
@@ -100,6 +94,12 @@ export default class Game {
     
     draw()
     {
+        // reinitial default values
+        this.ctx.lineWidth = Configs.render.lineWidth
+        this.ctx.fillStyle = Configs.render.fillStyle;
+        this.ctx.strokeStyle = Configs.render.strokeStyle;
+        this.ctx.font = Configs.render.font;
+
         this.world.draw();
     }
 

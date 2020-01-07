@@ -1,3 +1,4 @@
+import Colors from "./colors.js"
 
 export function avgTrZ(tr)
 {
@@ -8,6 +9,10 @@ export function avgQuadZ(quad)
 {
     return (quad.v1.z + quad.v2.z + quad.v3.z + quad.v4.z) / 4;
 }
+
+
+
+
 
 /* 
 export function randX() {

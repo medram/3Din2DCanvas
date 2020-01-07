@@ -1,16 +1,18 @@
 import { Vector3 }  from './math3d.js'
 import * as Math3d from './math3d.js'
 import * as util from './utils.js';
+import Colors from './colors.js'
 
 import Mesh from './mesh.js'
 
 export default class Entity {
-    constructor(objFileName = false, pos = false) {
+    constructor(objFileName = false, pos = false, fillStyleColor = '') {
         // the center of the OBJ
         this.pos = typeof pos === 'object' ? pos : new Vector3();
         this.mesh = objFileName ? new Mesh(objFileName) : false;
         this.modelMatrix = Math3d.translate(Math3d.rotate(Math3d.scale(Math3d.mat4(1.0), 1), Math3d.radians(0), new Vector3(0, 1, 0)), this.pos);
         this.newVertices = [];
+        this.fillStyleColor = fillStyleColor
     }
     
     update(game)

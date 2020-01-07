@@ -1,10 +1,11 @@
+import Colors from "./colors.js"
 
 let Configs = {
     render: {
         fill: true,
         lineWidth: 1,
-        fillStyle: '#5D9CEC',
-        strokeStyle: '#333',
+        fillStyle: Colors.GREEN,
+        strokeStyle: Colors.BLACK,
         font: '14px Arial',
         clipping: false,
     },

@@ -1,5 +1,7 @@
 import Keyboard from "./keyboard.js";
-//import Mouse from "./mouse.js";
+import Configs from "./configs.js"
+import Colors, { nextColor } from "./colors.js";
+
 
 export default class Input
 {
@@ -9,17 +11,35 @@ export default class Input
         this.Keyboard = Keyboard;
 //        this.mouse = new Mouse();
         this.keysPressed = [];
+        this.keysUp = [];
     }
 
     update()
     {
-        //console.log(this.keysPressed);
+        //console.log(this.keysUp);
+        if (this.game.input.keyup(Keyboard.KEY_1))
+            Configs.render.fill = !Configs.render.fill
+
+        if (this.game.input.keyup(Keyboard.KEY_2))
+            Configs.render.clipping = !Configs.render.clipping
+
+        if (this.game.input.keyup(Keyboard.KEY_3))
+            Configs.render.fillStyle = nextColor()
+
+        // clear Up keys (important)
+        this.keysUp = []
     }
 
     keypress(keyCode)
     {
         //console.log(keyCode)
         return this.keysPressed.includes(keyCode);
+    }
+
+    keyup(keyCode)
+    {
+        //console.log(keyCode)
+        return this.keysUp.includes(keyCode);
     }
 
     capturePressKeys(e)
@@ -44,6 +64,7 @@ export default class Input
         {
             // remove the key here
             this.keysPressed.splice(this.keysPressed.indexOf(keyCode), 1);
+            this.keysUp.push(keyCode)
         }
     }
 

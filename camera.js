@@ -2,6 +2,7 @@ import  * as Math3d from './math3d.js'
 import { Vector3 } from './math3d.js';
 import Vector4 from './math3d.js';
 import Entity from './entity.js';
+import Keyboard from "./keyboard.js";
 
 export class Camera extends Entity
 {
@@ -57,52 +58,52 @@ export class Camera extends Entity
 
         this.speed = 3 * game.timestamp;
         // move front
-        if (game.input.keypress(game.input.Keyboard.KEY_Z))
+        if (game.input.keypress(Keyboard.KEY_Z))
         {
             //console.log('Go front');
-            this.pos = this.pos.add(this.front.multi(this.speed * 10));
+            this.pos = this.pos.add(this.front.multi(this.speed * 5));
         }
         // move back
-        if (game.input.keypress(game.input.Keyboard.KEY_S))
+        if (game.input.keypress(Keyboard.KEY_S))
         {
             //console.log('Go back');
-            this.pos = this.pos.sub(this.front.multi(this.speed * 10));
+            this.pos = this.pos.sub(this.front.multi(this.speed * 5));
         }
 
         // move Right
-        if (game.input.keypress(game.input.Keyboard.KEY_D))
+        if (game.input.keypress(Keyboard.KEY_D))
         {
             //console.log('Go right');
-            this.pos = this.pos.add(Math3d.normalize(this.front.cross(this.up)).multi(this.speed * 10));
+            this.pos = this.pos.add(Math3d.normalize(this.front.cross(this.up)).multi(this.speed * 5));
         }
         // move left
-        if (game.input.keypress(game.input.Keyboard.KEY_Q))
+        if (game.input.keypress(Keyboard.KEY_Q))
         {
             //console.log('Go left');
-            this.pos = this.pos.sub(Math3d.normalize(this.front.cross(this.up)).multi(this.speed * 10));
+            this.pos = this.pos.sub(Math3d.normalize(this.front.cross(this.up)).multi(this.speed * 5));
         }
 
         // for Camera direction
         // look up
-        if (game.input.keypress(game.input.Keyboard.KEY_ARROW_UP)) {
+        if (game.input.keypress(Keyboard.KEY_ARROW_UP)) {
             //console.log('pitch Rotate Camera');
             this.pitch += this.speed * 15;
         }
 
         // look down
-        if (game.input.keypress(game.input.Keyboard.KEY_ARROW_DOWN)) {
+        if (game.input.keypress(Keyboard.KEY_ARROW_DOWN)) {
             //console.log('pitch Rotate Camera');
             this.pitch -= this.speed * 15;
         }
         
         // turn right
-        if (game.input.keypress(game.input.Keyboard.KEY_ARROW_RIGHT)) {
+        if (game.input.keypress(Keyboard.KEY_ARROW_RIGHT)) {
             //console.log('yaw Rotate Camera');
             this.yaw += this.speed * 15;
         }
 
         // turn left
-        if (game.input.keypress(game.input.Keyboard.KEY_ARROW_LEFT)) {
+        if (game.input.keypress(Keyboard.KEY_ARROW_LEFT)) {
             //console.log('yaw Rotate Camera');
             this.yaw -= this.speed * 15;
         }

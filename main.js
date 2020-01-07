@@ -3,6 +3,7 @@ import Cube from './cube.js'
 import * as util from './utils.js';
 import { Vector3, Vector2 } from './math3d.js';
 import Entity from './entity.js';
+import Colors from './colors.js'
 
 // init resizing canvas
 window.onload = function (){
@@ -12,14 +13,14 @@ window.onload = function (){
 
 function main()
 {
-	let game = new Game('my-canvas');
-	let cube = new Entity('cube.obj', new Vector3(0, 0, -3));
-	let obj = new Entity('exampleOBJ.obj', new Vector3(2, 0, 4));
-	let obj2 = new Entity('lamp.obj', new Vector3(-2, 0, -6));
-	let obj3 = new Entity('lowPolyTree.obj', new Vector3(6, 0, -7));
-	let obj4 = new Entity('pine.obj', new Vector3(-7, 0, -7));
-	let obj5 = new Entity('stall.obj', new Vector3(-2, 0, -12));
-	let plane = new Entity('plane2.obj', new Vector3(-2, 0, -1));
+	const game = new Game('my-canvas');
+	const cube = new Entity('cube.obj', new Vector3(0, 0, -3));
+	const obj = new Entity('exampleOBJ.obj', new Vector3(2, 0, 4));
+	const obj2 = new Entity('lamp.obj', new Vector3(-2, 0, -6), Colors.YELLOW);
+	const obj3 = new Entity('lowPolyTree.obj', new Vector3(6, 0, -7), Colors.BLUE);
+	const obj4 = new Entity('pine.obj', new Vector3(-7, 0, -7));
+	const obj5 = new Entity('stall.obj', new Vector3(-2, 0, -12));
+	const plane = new Entity('plane2.obj', new Vector3(-2, 0, -1));
 
 	game.world.drawable.push(cube);
 	game.world.updateable.push(cube);
