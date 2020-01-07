@@ -46,6 +46,16 @@ export default class Game {
         //window.addEventListener('keypress', this.input.capturePressKeys.bind(this.input));
         window.addEventListener('keydown', this.input.capturnDownKeys.bind(this.input));
         window.addEventListener('keyup', this.input.capturnUpKeys.bind(this.input));
+
+        window.onresize = (e) => {
+            this.canvas.width = document.documentElement.clientWidth;
+            this.canvas.height = document.documentElement.clientHeight-4;
+            this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+            this.center = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
+            this.ctx.fillStyle = Configs.render.fillStyle; // #8CC152 Green
+            this.ctx.strokeStyle = Configs.render.strokeStyle;
+            this.ctx.font = Configs.render.font;
+        };
     }
 
     loop(callback) {

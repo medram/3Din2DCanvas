@@ -61,11 +61,5 @@ function main()
 		canvas.width = document.documentElement.clientWidth;
 		canvas.height = document.documentElement.clientHeight;
 	} */
-	window.onresize = (e) => {
-		game.canvas.width = document.documentElement.clientWidth;
-		game.canvas.height = document.documentElement.clientHeight-4;
-		game.center = new Vector2(game.canvas.width / 2, game.canvas.height / 2);
-		game.ctx.translate(game.canvas.width / 2, game.canvas.height / 2);
-	};
 }
 
