@@ -1,6 +1,122 @@
-import Triangle from "./triangle.js";
+import Triangle from "./triangle.js"
+import Colors from './colors.js'
 
-export default class Vector4 {
+export default null
+
+const INFINITY = 4294967295
+
+export function bbox(pol, width, height) // pol is Traingle here
+{
+  let Xmin = width  // set to the max value
+  let Ymin = height // set to the max value
+  let Xmax = 0
+  let Ymax = 0
+
+  let v = [pol.v1, pol.v2, pol.v3]
+
+  // convert from 0 to 1 to screen scall (in pixels)
+/*  v.map(v => {
+    // v means vertex
+    v.x = Math.round(v.x * width)
+    v.y = Math.round(-v.y * height)
+  })*/
+
+  for (let i = 0; i < 3; ++i)
+  {
+    if (v[i].x < Xmin)
+      Xmin = v[i].x
+
+    if (v[i].y < Ymin)
+      Ymin = v[i].y
+
+    if (v[i].x > Xmax)
+      Xmax = v[i].x
+
+    if (v[i].y > Ymax)
+      Ymax = v[i].y
+  }
+
+  return [
+    [Xmin, Ymin], 
+    [Xmax, Ymax]
+  ] 
+}
+
+
+export function pixelContainedIn2DTraingle(v1, v2, v3, x, y, z)
+{
+  if (Math.random() > 0.5)
+    return true
+  else 
+    return false
+}
+
+
+/*
+v1 & v2 are tow vertices
+x & y is P is a point coordinat
+*/
+export function edgeFunction(a, b, x, y)
+{
+  return (x - a.x) * (b.y - a.y) - (y - a.y) * (b.x - a.x) >= 0
+  //let aria = (x - a.x) * (b.y - a.y) - (y - a.y) * (b.x - a.x)
+
+}
+
+/*
+v1 & v2 are tow vertices
+p is a point
+*/
+export function Area(a, b, p)
+{
+  return (p.x - a.x) * (b.y - a.y) - (p.y - a.y) * (b.x - a.x)
+}
+
+export function Area2(a, b, x, y)
+{
+  return (x - a.x) * (b.y - a.y) - (y - a.y) * (b.x - a.x)
+}
+
+export function isPointInsideTriangle(v0, v1, v2, x, y)
+{
+  //inside = edgeFunction(v0, v1, x, y) && edgeFunction(v1, v2, x, y) && edgeFunction(v2, v0, x, y)
+  return edgeFunction(v0, v1, x, y) && edgeFunction(v1, v2, x, y) && edgeFunction(v2, v0, x, y)
+}
+
+export function Rastoration(v0, v1, v2, x, y)
+{
+  return {
+    isPointInsideTriangle: isPointInsideTriangle(v0, v1, v2, x, y),
+    //inLine: () => parseInt(Area2(v0, v1, x, y)*0.09) == 0 || parseInt(Area2(v1, v2, x, y)*0.09) == 0 || parseInt(Area2(v2, v0, x, y)*0.09) == 0,
+    inLine: () => false,
+    getZ: () => {
+      /*============== This is how Z has been catculated =================*/
+      // a+b+c= 1
+      let area = Area(v0, v1, v2)
+      let a = edgeFunction(v0, v1, x, y) / area
+      let b = edgeFunction(v1, v2, x, y) / area
+      let c = edgeFunction(v2, v0, x, y) / area
+      return a * v0.z + b * v1.z + c * v2.z
+      
+      /*============ But we should rediuce the Z catculation =============  */    
+      /*let area = Area(v0, v1, v2)
+      //console.log(area)
+      let b = edgeFunction(v1, v2, x, y) / area
+      let c = edgeFunction(v2, v0, x, y) / area
+      return v0.z + b * (v1.z - v0.z) + c * (v2.z - v0.z)*/
+    }
+  }
+}
+
+
+export function perpendicularOnTr(tr)
+{
+  return normalize(tr.v1.cross(tr.v2))
+}
+
+
+
+export class Vector4 {
   constructor (x = 0 , y = 0 , z = 0 , w = 1) {
     this.x = parseFloat(x);
     this.y = parseFloat(y);
@@ -333,12 +449,14 @@ export function viewSpace (camera, list) {
 
 export class Quadrant
 {
-  constructor(v1, v2, v3, v4)
+  constructor(v1, v2, v3, v4, face = [], color = Colors.WHITE)
   {
-    this.v1 = v1;
-    this.v2 = v2;
-    this.v3 = v3;
-    this.v4 = v4;
+    this.v1 = v1
+    this.v2 = v2
+    this.v3 = v3
+    this.v4 = v4
+    this.face = face
+    this.color = color
   }
 }
 
@@ -363,9 +481,8 @@ export function dist(planePos, planeNormal, point)
 export function clipAgainstPlane(planePos, planeNormal, pol, out)
 {
   // check if polygon is a Triangle or Quadrant
-  if (pol.v4 !== undefined) {
+  if (pol.v4)
     return clipQuadAgainstPlane(planePos, planeNormal, pol, out);
-  }
 
   return clipTrAgainstPlane(planePos, planeNormal, pol, out);
 }
@@ -456,16 +573,17 @@ export function clipTrAgainstPlane(planePos, planeNormal, tr, out)
     out.push(new Triangle(
       insidePoints[0],
         intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]),
-        intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[1]))
-      );
+        intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[1]),
+        tr.face
+      ));
     return 1;
   }
 
   if (insidePoints.length == 2 && outsidePoints.length == 1)
   {
-    let tr1 = new Triangle(insidePoints[0], insidePoints[1], intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]));
+    let tr1 = new Triangle(insidePoints[0], insidePoints[1], intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]), tr.face, tr.color);
     out.push(tr1);
-    out.push(new Triangle(insidePoints[1], tr1.v3, intersectPlane(planePos, planeNormal, insidePoints[1], outsidePoints[0])));
+    out.push(new Triangle(insidePoints[1], tr1.v3, intersectPlane(planePos, planeNormal, insidePoints[1], outsidePoints[0]), tr.face, tr.color));
 
     return 2;
   }
@@ -473,5 +591,5 @@ export function clipTrAgainstPlane(planePos, planeNormal, tr, out)
 
 export function convertQuadrantToTriangles(quad)
 {
-  return [new Triangle(quad.v1, quad.v2, quad.v3), new Triangle(quad.v1, quad.v3, quad.v4)];
+  return [new Triangle(quad.v1, quad.v2, quad.v3, quad.face, quad.color), new Triangle(quad.v1, quad.v3, quad.v4, quad.face, quad.color)];
 }

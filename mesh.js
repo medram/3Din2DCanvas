@@ -6,7 +6,7 @@ export default class Mesh {
   constructor (filename) {
     let file = new LoadOBJ(filename)
     this.vertices = file.vertices
-    this.normales = file.normales
+    this.normals = file.normals
     this.faces = file.faces
     this.triangles = []
     
@@ -27,74 +27,54 @@ export default class Mesh {
   */
   }
 
-  getPolygons(list)
+  getPolygons(vertices)
   {
     if (!this.found)
         return [];
 
-    if (this.faces[0] && this.faces[0].length === 3)
-      return this.getTriangles(list)
+    if (this.faces[0] && this.faces[0].v.length === 3)
+      return this.getTriangles(vertices)
     else
     {
-      //return this.convertQuadListToTr(this.getQuadrant(list))
-      return this.getQuadrant(list)
+      //return this.convertQuadListToTr(this.getQuadrant(vertices))
+      return this.getQuadrant(vertices)
     }
   }
 
   // list of the vertices
-  getTriangles (list) {
-    if (this.faces[0].length !== 3)
-      return []
+  getTriangles (vertices) {
+/*    if (this.faces[0].v.length !== 3)
+      return []*/
 
-    let newList = []
-    this.faces.forEach(face => {
-      let v = []
-      face.forEach(item => {
-        // console.log(this)
-        item = item.split('/')
-        //v.push(this.vertices[item[0] - 1])
-        v.push(list[item[0] - 1])
-        //console.log(list[item[0] - 1])
+    return this.faces.map(face => {
+      let v = face.v.map(value => {
+        return vertices[value - 1]
       })
-      // console.log(v)
-      newList.push(new Triangle(v[0], v[1], v[2]))
+      return new Triangle(v[0], v[1], v[2], face)
     })
-    //console.log(newList)
-    return newList
   }
 
-  getQuadrant (list) {
-    if (this.faces[0].length !== 4)
-      return [];
+  getQuadrant (vertices) {
+/*    if (this.faces[0].length !== 4)
+      return [];*/
 
-    let newList = []
-    this.faces.forEach(face => {
-      let v = []
-      face.forEach(item => {
-        // console.log(this)
-        item = item.split('/')
-        // v.push(this.vertices[item[0] - 1])
-        v.push(list[item[0] - 1])
-      // console.log(this.vertices[item[0] - 1])
+    return this.faces.map(face => {
+      let v = face.v.map(value => {
+        return vertices[value - 1]
       })
-      // console.log(v)
-      newList.push(new Quadrant(v[0], v[1], v[2], v[3]))
+      return new Quadrant(v[0], v[1], v[2], v[3], face)
     })
-    // console.log(this.vertices)
-    return newList
   }
 
   convertQuadrantToTriangles(quad)
   {
-    return [new Triangle(quad.v1, quad.v2, quad.v3), new Triangle(quad.v1, quad.v3, quad.v4)];
+    return [new Triangle(quad.v1, quad.v2, quad.v3, quad.face, quad.color), new Triangle(quad.v1, quad.v3, quad.v4, quad.face, quad.color)];
   }
 
   convertQuadListToTr(list)
   {
-    let newList = [];
-    list.forEach(quad => {
-      newList = newList.concat(this.convertQuadrantToTriangles(quad));
+    return list.map(quad => {
+      return newList.concat(this.convertQuadrantToTriangles(quad));
     });
-    return newList;
   }
 }

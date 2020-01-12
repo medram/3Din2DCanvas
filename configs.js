@@ -5,7 +5,7 @@ let Configs = {
         fill: true,
         lineWidth: 1,
         fillStyle: Colors.GREEN,
-        strokeStyle: Colors.BLACK,
+        strokeStyle: Colors.WHITE,
         font: '14px Arial',
         clipping: false,
     },

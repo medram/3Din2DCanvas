@@ -22,11 +22,12 @@ export default class Game {
         this.run = false;
         
         this.center = 0;
-        
-        this.render = new Render(this);
+        this.canvas = {}
+
         this.input = new Input(this);
         this.init(id);
         this.world = new World(this);
+        this.render = new Render(this);
     }
 
     init(id)
@@ -36,9 +37,9 @@ export default class Game {
         this.canvas.width = document.documentElement.clientWidth;
         this.canvas.height = document.documentElement.clientHeight-4;
 
-        this.center = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
-        this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
-
+        //this.center = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
+        //this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+        this.center = new Vector2(0, 0)
         // Capture inputs
         //window.addEventListener('keypress', this.input.capturePressKeys.bind(this.input));
         window.addEventListener('keydown', this.input.capturnDownKeys.bind(this.input));
@@ -48,8 +49,12 @@ export default class Game {
         window.onresize = (e) => {
             this.canvas.width = document.documentElement.clientWidth;
             this.canvas.height = document.documentElement.clientHeight-4;
-            this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
-            this.center = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
+            // very important to reinitialize the Z_Buffer & FrameBuffer
+            this.render.init_ZBuffer()
+            this.render.init_FrameBuffer()
+
+            //this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
+            //this.center = new Vector2(this.canvas.width / 2, this.canvas.height / 2);
         };
     }
 

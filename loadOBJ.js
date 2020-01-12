@@ -1,5 +1,6 @@
-import Vector4 from "./math3d.js";
+import { Vector4, Vector3 } from "./math3d.js";
 import Configs from "./configs.js";
+import * as Math3d from "./math3d.js";
 
 export default class LoadOBJ {
     constructor(filename)
@@ -8,7 +9,7 @@ export default class LoadOBJ {
         this.data = this.readObjFile('http://' + Configs.server.host + ':' + Configs.server.port + "/inc/Objs/" + filename);
         this.vertices = [];
         this.faces = [];
-        this.normales = [];
+        this.normals = [];
         this.textures = [];
         
         this.fileFound = false;
@@ -25,26 +26,38 @@ export default class LoadOBJ {
             this.fileFound = true;
 
         let lines = this.data.split('\n');
+        let face = null
         lines.forEach(line => {
             if (line.startsWith('v '))
             {
-                let arr = line.slice(2).split(' ');
-                this.vertices.push(new Vector4(arr[0], arr[1], arr[2]));
+                let arr = line.slice(2).split(' ').map(value => parseFloat(value));
+                this.vertices.push(new Vector4(...arr));
                 //console.log(this.vertices[0]);
             }
             else if (line.startsWith('vn '))
             {
-                let arr = line.slice(3).split(' ');
-                this.normales.push(new Vector4(arr[0], arr[1], arr[2]));
+                let arr = line.slice(3).split(' ').map(value => parseFloat(value));
+                this.normals.push(Math3d.normalize(new Vector3(...arr)));
             }
             else if (line.startsWith('vt '))
             {
-                let arr = line.slice(3).split(' ');
-                this.textures.push(new Vector4(arr[0], arr[1]));
+                let arr = line.slice(3).split(' ').map(value => parseFloat(value));
+                this.textures.push(new Vector4(...arr));
             }
             else if (line.startsWith('f '))
             {
-                this.faces.push(line.slice(2).split(' '));
+                face = {
+                    v: [],
+                    vt: [],
+                    vn: []
+                }
+                line.slice(2).split(' ').map((part, i) => {
+                    part = part.split('/').map(value => parseInt(value))
+                    face.v[i] = part[0]
+                    face.vt[i] = part[1]
+                    face.vn[i] = part[2]
+                })
+                this.faces.push(face);
             }
         });
         //console.log(this.faces);
