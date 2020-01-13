@@ -3,8 +3,6 @@ import Colors from './colors.js'
 
 export default null
 
-const INFINITY = +Infinity
-
 export function bbox(pol, width, height) // pol is Traingle here
 {
   let Xmin = width  // set to the max value
@@ -59,8 +57,6 @@ x & y is P is a point coordinat
 export function edgeFunction(a, b, x, y)
 {
   return (x - a.x) * (b.y - a.y) - (y - a.y) * (b.x - a.x) >= 0
-  //let aria = (x - a.x) * (b.y - a.y) - (y - a.y) * (b.x - a.x)
-
 }
 
 /*

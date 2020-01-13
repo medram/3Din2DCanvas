@@ -8,7 +8,7 @@ export class Camera extends Entity
 {
     //new Vector3(-17, 8, 12)
     //new Vector3(0.811, -0.14, -0.568)
-    constructor(pos = new Vector3(0, 0, 100), front = new Vector3(0, 0, 1), up = new Vector3(0, 1, 0))
+    constructor(pos = new Vector3(0, 0, 50), front = new Vector3(0, 0, 1), up = new Vector3(0, 1, 0))
     {
         super(false, pos);
         this.fov = 90;

@@ -285,6 +285,7 @@ export default class Render
             //pol.v3.z *= -1
             //console.log(pol)
 
+            // calculate the boundary box that wrap the triangle (v1, v2, v3)
             let [Vmin, Vmax] = Math3d.bbox(pol, width, height)
             // clip the bbox by the screen to rediuce Rastoration process.
             let Xmin = Math.max(0, Math.min(width-1, Vmin[0]))
@@ -293,25 +294,34 @@ export default class Render
             let Xmax = Math.max(0, Math.min(width-1, Vmax[0]))
             let Ymax = Math.max(0, Math.min(height-1, Vmax[1]))
 
-/*            
-            console.log('min', [Xmin, Ymin])
-            console.log('max', [Xmax, Ymax])*/
             let z = null
+            let area = null
+            let a = null
+            let b = null
+            let c = null
             for (let x = Xmin; x <= Xmax; ++x)
             {
                 for (let y = Ymin; y <= Ymax; ++y)
                 {
-                    let Rastoration = Math3d.Rastoration(pol.v1, pol.v2, pol.v3, x, y)
-                    //Math3d.isPointInsideTriangle(pol.v1, pol.v2, pol.v3, x, y)
+                    area = Math3d.Area(pol.v1, pol.v2, pol.v3)  // the total area of the triangle (poligon)
+                    a = Math3d.Area2(pol.v2, pol.v3, x, y)      // aria of triangle (v2, v3, p) 
+                    b = Math3d.Area2(pol.v3, pol.v1, x, y)      // aria of triangle (v3, v1, p)
+                    c = Math3d.Area2(pol.v1, pol.v2, x, y)      // aria of triangle (v1, v2, p)
 
-                    // x, y of Point P inside the 2D triangle.
-                    if (Rastoration.isPointInsideTriangle)
+                    // check x & y of Point P if is inside the 2D triangle.
+                    if (a >= 0 && b >= 0 && c >= 0)
                     {
-                        z = Rastoration.getZ()
-                        //console.log(z)
+                        // calculate the barycentric coordinates.
+                        a /= area
+                        b /= area
+                        c /= area
+
+                        // calcutate Z coordinate of P using a, b & c  
+                        z = a * pol.v1.z + b * pol.v2.z + c * pol.v3.z
+                        //z = 1 / (a / pol.v1.z + b / pol.v2.z + c / pol.v3.z)
+
                         if (z > this.Z_Buffer[x][y])
                         {
-                            //console.log(z, old_z)
                             this.Z_Buffer[x][y] = z // distance from camera to the traingle
                             this.FrameBuffer[x][y] = pol.color
                         }
@@ -320,25 +330,7 @@ export default class Render
                             this.Z_Buffer[x][y] = z
                             this.FrameBuffer[x][y] = Colors.RED
                         }*/
-                        
-
-                        /*if (!Rastoration.inLine())
-                            this.FrameBuffer[x][y] = pol.color
-                        else
-                            this.FrameBuffer[x][y] = Configs.render.strokeStyle
-                        */
-
-
-
-                        //this.game.ctx.fillStyle = pol.color
-                        //this.game.ctx.fillRect(x, y, 1, 1)
                     }
-/*                    else
-                    {
-                        //this.FrameBuffer[x][y] = Colors.BLACK
-                        //this.game.ctx.fillStyle = Colors.BLACK
-                        //this.game.ctx.fillRect(x, y, 1, 1)
-                    }*/
                 }
             }
 
