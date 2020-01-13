@@ -3,7 +3,7 @@ import Colors from './colors.js'
 
 export default null
 
-const INFINITY = 4294967295
+const INFINITY = +Infinity
 
 export function bbox(pol, width, height) // pol is Traingle here
 {
@@ -93,17 +93,24 @@ export function Rastoration(v0, v1, v2, x, y)
       /*============== This is how Z has been catculated =================*/
       // a+b+c= 1
       let area = Area(v0, v1, v2)
-      let a = edgeFunction(v0, v1, x, y) / area
-      let b = edgeFunction(v1, v2, x, y) / area
-      let c = edgeFunction(v2, v0, x, y) / area
+      let a = Area2(v1, v2, x, y) / area
+      let b = Area2(v2, v0, x, y) / area
+      let c = Area2(v0, v1, x, y) / area
       return a * v0.z + b * v1.z + c * v2.z
+
       
       /*============ But we should rediuce the Z catculation =============  */    
-      /*let area = Area(v0, v1, v2)
+/*      let area = Area(v0, v1, v2)
       //console.log(area)
-      let b = edgeFunction(v1, v2, x, y) / area
-      let c = edgeFunction(v2, v0, x, y) / area
+      let b = Area2(v2, v0, x, y) / area
+      let c = Area2(v0, v1, x, y) / area
       return v0.z + b * (v1.z - v0.z) + c * (v2.z - v0.z)*/
+
+/*      let area = Area(v0, v1, v2)
+      let a = Area2(v1, v2, x, y) / area
+      let b = Area2(v2, v0, x, y) / area
+      let c = Area2(v0, v1, x, y) / area
+      return  1 / (a / v0.z + b / v1.z + c / v2.z)*/
     }
   }
 }
@@ -298,10 +305,10 @@ export function perspective(fov, wh, near, far, v) {
     far / (far - near) * v.z + 1
   ); */
   return new Matrix4([
-    [1 / (Math.tan(fov * 0.5) * wh), 0, 0, 0],
-    [0, 1 / Math.tan(fov * 0.5), 0, 0],
-    [0, 0, far / (far - near), 1],
-    [0, 0, near * far / (near - far), 0]
+    [1 / (Math.tan(fov * 0.5) * wh),  0,                          0,                          0],
+    [0,                               1 / Math.tan(fov * 0.5),    0,                          0],
+    [0,                               0,                          far / (far - near),         1],
+    [0,                               0,                          near * far / (near - far),  0]
   ]);
 }
 
@@ -320,13 +327,6 @@ export function createLookAt(eye, target, up) {
       [F.x, F.y, F.z, T.z],
       [0,     0,   0,   1]
     ]);
-
-/*   return new Matrix4([
-    [L.x, U.x, F.x, 0],
-    [L.y, U.y, F.y, 0],
-    [L.z, U.z, F.z, 0],
-    [T.x, T.y, T.z, 1]
-  ]); */
 }
 
 export function normalize (v) {
@@ -414,8 +414,8 @@ export function radians (angle) {
   return angle * Math.PI / 180
 }
 
-export function degrees (angle) {
-  return radien * 180 / Math.PI
+export function degrees (radians) {
+  return radians * 180 / Math.PI
 }
 
 export function worldSpace (center, listOfVectors4) {

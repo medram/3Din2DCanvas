@@ -59,6 +59,7 @@ function main()
 		totalAngle += (angleSpeed * this.timestamp);
 		
 		//console.log('fps:' + Math.round(this.frames, 2));
+		cube.rotate(totalAngle, new Vector3(0, 1, 0));
 		light.rotate(totalAngle, new Vector3(0, 1, 0));
 		this.update();
 		this.draw();

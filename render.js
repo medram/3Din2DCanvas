@@ -12,7 +12,7 @@ export default class Render
         this.game = game;
         this.Z_Buffer = null
         this.FrameBuffer = null
-        this.MAX_ZBUFFER_SIZE = -4294967295
+        this.MAX_ZBUFFER_SIZE = -Infinity
         this.DEFAULT_FRAMEBUFFER_COLOR = Colors.BLACK
         //this.objects = this.game.world
         
@@ -24,6 +24,15 @@ export default class Render
     init_ZBuffer()
     {
         this.Z_Buffer = new Array(this.game.canvas.width).fill(new Array(this.game.canvas.height).fill(this.MAX_ZBUFFER_SIZE))
+/*        this.Z_Buffer = []
+        let tmp = null
+        for (let x = 0; x < this.game.canvas.width; ++x)
+        {
+            tmp = []
+            for (let y = 0; y < this.game.canvas.height; ++y)
+                tmp.push(Colors.BLACK)
+            this.Z_Buffer.push(tmp)
+        }*/
     }
 
     // must be initilized with black color
@@ -256,19 +265,24 @@ export default class Render
 /*        let pol = new Triangle(new Vector2(50, 183), new Vector2(27, 204), new Vector2(11, 177), Colors.GREEN) 
         polygonsList = [pol]
 */
+
+        //console.log(polygonsList)
+
         polygonsList.map(pol => {
 
 
             // convert from 0 to 1 to screen scall (in pixels)
             pol.v1.x = Math.round(pol.v1.x * width + width*0.5)
             pol.v1.y = Math.round(-pol.v1.y * height + height*0.5)
+            //pol.v1.z *= -1 
 
             pol.v2.x = Math.round(pol.v2.x * width + width*0.5)
             pol.v2.y = Math.round(-pol.v2.y * height + height*0.5)
+            //pol.v2.z *= -1
 
             pol.v3.x = Math.round(pol.v3.x * width + width*0.5)
             pol.v3.y = Math.round(-pol.v3.y * height + height*0.5)
-
+            //pol.v3.z *= -1
             //console.log(pol)
 
             let [Vmin, Vmax] = Math3d.bbox(pol, width, height)
@@ -279,7 +293,6 @@ export default class Render
             let Xmax = Math.max(0, Math.min(width-1, Vmax[0]))
             let Ymax = Math.max(0, Math.min(height-1, Vmax[1]))
 
-            //console.log(pol)
 /*            
             console.log('min', [Xmin, Ymin])
             console.log('max', [Xmax, Ymax])*/
@@ -291,15 +304,22 @@ export default class Render
                     let Rastoration = Math3d.Rastoration(pol.v1, pol.v2, pol.v3, x, y)
                     //Math3d.isPointInsideTriangle(pol.v1, pol.v2, pol.v3, x, y)
 
+                    // x, y of Point P inside the 2D triangle.
                     if (Rastoration.isPointInsideTriangle)
                     {
                         z = Rastoration.getZ()
-                        if (z >= this.Z_Buffer[x][y])
+                        //console.log(z)
+                        if (z > this.Z_Buffer[x][y])
                         {
                             //console.log(z, old_z)
                             this.Z_Buffer[x][y] = z // distance from camera to the traingle
                             this.FrameBuffer[x][y] = pol.color
                         }
+                        /*if (z < 0.5 && z > -0.5)
+                        {
+                            this.Z_Buffer[x][y] = z
+                            this.FrameBuffer[x][y] = Colors.RED
+                        }*/
                         
 
                         /*if (!Rastoration.inLine())
