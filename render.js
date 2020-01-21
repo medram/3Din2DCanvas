@@ -40,10 +40,9 @@ export default class Render
     {
         let width = this.game.canvas.width
         let height = this.game.canvas.height
-        let color = Colors.BLACK
 
         this.FrameBuffer = (new Array(width).fill(0)).map((item) => {
-            return new Array(height).fill(color)
+            return new Array(height).fill(this.DEFAULT_FRAMEBUFFER_COLOR)
         })
 
 /*        this.FrameBuffer = new Array(width)
@@ -86,27 +85,42 @@ export default class Render
 
     clearFrameBuffer()
     {
-        this.FrameBuffer = this.FrameBuffer.map((colorsColumn) => colorsColumn.map((color) => Colors.BLACK))
+        this.FrameBuffer = this.FrameBuffer.map((colorsColumn) => colorsColumn.map((color) => this.DEFAULT_FRAMEBUFFER_COLOR))
     }
 
+    // Render the FrameBuffer to the Screen
     renderFrameBuffer()
     {
-        // Render the FrameBuffer to the Screen
+        let imgData = this.game.ctx.createImageData(this.game.canvas.width, this.game.canvas.height)
+
+        let color = null
+        let i = 0
+        for (let y = 0; y < this.game.canvas.height; ++y)
+        {
+            for (let x = 0; x < this.game.canvas.width; ++x)
+            {
+                color = this.FrameBuffer[x][y]
+                imgData.data[i+0] = color[0]
+                imgData.data[i+1] = color[1]
+                imgData.data[i+2] = color[2]
+                imgData.data[i+3] = color[3]
+                i+=4
+            }
+        }
+
+        this.game.ctx.putImageData(imgData, 0, 0)
+
+        /*
         this.FrameBuffer.map((colorsColumn, x) => {
             colorsColumn.map((color, y) => {
                 this.game.ctx.fillStyle = color
                 this.game.ctx.fillRect(x, y, 1, 1)
             })
-        })
+        })*/
     }
 
     renderWorld(objs)
     {
-        // sort objects
-        /*objs = objs.sort((obj1, obj2) => {
-            //console.log(obj2.getPosition().z, obj1.getPosition().z)
-            return obj1.getPosition().z - obj2.getPosition().z
-        })*/
         objs.map(obj => {
             this.renderEntity(obj)
         })
@@ -196,15 +210,14 @@ export default class Render
         let perp = null
         let contrast = null
         let color = null
-/*      console.log('facesList:', facesList.length)
-        console.log('polygonsList:', polygonsList.length)*/
         polygonsList.map((pol, i) => {
             //perp = normalsList[facesList[i].vn[0]-1]
             perp = normalsList[pol.face.vn[0]-1]
             //if (!perp) console.log(pol.face)
             contrast = (perp.dot(lightSource)+1)*0.5
-            color = Math.round(contrast*240+20) // the color range should be 0~255 (but 20~240 is better)
-            pol.color = `rgb(${color}, ${color}, ${color})`
+            color = (contrast*220+20).toFixed(0) // the color range should be 0~255 (but 15~240 is better)
+            //pol.color = `rgb(${color}, ${color}, ${color})`
+            pol.color = new Uint8Array([color, color, color, 255]) // 255 for opacity
         })
 
         //################### Project the all poligons to the seen #################
@@ -317,15 +330,15 @@ export default class Render
                         c /= area
 
                         // calcutate Z coordinate of P using a, b & c  
-                        z = a * pol.v1.z + b * pol.v2.z + c * pol.v3.z
-                        //z = 1 / (a / pol.v1.z + b / pol.v2.z + c / pol.v3.z)
+                        //z = a * pol.v1.z + b * pol.v2.z + c * pol.v3.z
+                        z = 1 / (a / pol.v1.z + b / pol.v2.z + c / pol.v3.z)
 
                         if (z > this.Z_Buffer[x][y])
                         {
                             this.Z_Buffer[x][y] = z // distance from camera to the traingle
                             this.FrameBuffer[x][y] = pol.color
                         }
-                        /*if (z < 0.5 && z > -0.5)
+                        /*if (a.toFixed(2) == 0 || b.toFixed(2) == 0 || c.toFixed(2) == 0)
                         {
                             this.Z_Buffer[x][y] = z
                             this.FrameBuffer[x][y] = Colors.RED
@@ -436,7 +449,7 @@ export default class Render
     clear()
     {
         //this.game.ctx.clearRect(-this.game.canvas.width / 2, -this.game.canvas.height / 2, this.game.canvas.width, this.game.canvas.height);
-        this.game.ctx.fillStyle = Colors.BLACK
+        this.game.ctx.fillStyle = this.DEFAULT_FRAMEBUFFER_COLOR
         //this.game.ctx.clearRect(0, 0, this.game.canvas.width, this.game.canvas.height);
         this.game.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
     }

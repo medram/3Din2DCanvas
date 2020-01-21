@@ -15,13 +15,13 @@ window.onload = function (){
 function main()
 {
 	const game = new Game('my-canvas');
-	const cube = new Entity('cube.obj', new Vector4(0, 0, 0, 1), Colors.GREEN);
+	const cube = new Entity('cube.obj', new Vector4(0, 0, 0, 1), Colors.YELLOW);
 	const obj = new Entity('exampleOBJ.obj', new Vector4(2, 0, 4, 1));
-	//const obj2 = new Entity('lamp.obj', new Vector4(-2, 0, -6, 1), Colors.YELLOW);
+	const obj2 = new Entity('lamp.obj', new Vector4(-2, 0, -6, 1), Colors.YELLOW);
 	//new Vector4(6, 0, -7, 1)
 	const obj3 = new Entity('lowPolyTree.obj', new Vector4(6, 0, -7, 1), Colors.BLUE);
-	//const obj4 = new Entity('pine.obj', new Vector4(-7, 0, -7, 1));
-	//const obj5 = new Entity('stall.obj', new Vector4(-2, 0, -12, 1));
+	const obj4 = new Entity('pine.obj', new Vector4(-7, 0, -7, 1));
+	const obj5 = new Entity('stall.obj', new Vector4(-2, 0, -12, 1));
 	const plane = new Entity('cube.obj', new Vector4(1, 1, 1, 1), Colors.BLUE);
 
 	const light = new Light(new Vector4(1, -1, 0, 1), new Vector4(5, 5, -5, 1))
@@ -40,25 +40,26 @@ function main()
 /*	game.world.drawable.push(obj);
 	game.world.updateable.push(obj);
 */	
-/*	game.world.drawable.push(obj2);
-	game.world.updateable.push(obj2);*/
+	game.world.drawable.push(obj2);
+	game.world.updateable.push(obj2);
 	
 	game.world.drawable.push(obj3);
 	game.world.updateable.push(obj3);
 
-/*	game.world.drawable.push(obj4);
-	game.world.updateable.push(obj4);*/
+	game.world.drawable.push(obj4);
+	game.world.updateable.push(obj4);
 
 
-/*	game.world.drawable.push(obj5);
-	game.world.updateable.push(obj5);*/
+	game.world.drawable.push(obj5);
+	game.world.updateable.push(obj5);
 
 	let angleSpeed = 15; // 30 degrees per second
 	let totalAngle = 10;
 	game.loop(function (){
 		totalAngle += (angleSpeed * this.timestamp);
 		
-		//console.log('fps:' + Math.round(this.frames, 2));
+		/*console.clear();
+		console.log('fps:' + this.frames.toFixed(1));*/
 		cube.rotate(totalAngle, new Vector3(0, 1, 0));
 		light.rotate(totalAngle, new Vector3(0, 1, 0));
 		this.update();
