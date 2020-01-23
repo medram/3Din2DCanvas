@@ -4,77 +4,99 @@ import Vector3, { Quadrant } from './math3d.js'
 
 export default class Mesh {
   constructor (filename) {
-    let file = new LoadOBJ(filename)
+    this.filename = filename
+    let file = new LoadOBJ(this.filename)
     this.vertices = file.vertices
     this.normals = file.normals
     this.faces = file.faces
     this.triangles = []
     
     this.found = file.fileFound && this.vertices.length > 0;
-  
-    /*
-  this.vertices = [
-      new Vector3(-1, 1, 0),
-      new Vector3(1, 1, 0),
-      new Vector3(1, -1, 0),
-      new Vector3(-1, -1, 0)
-  ]
-  
-  this.faces = [
-      ["1/0/0", "2/0/0", "3/0/0"],
-      ["1/0/0", "3/0/0", "4/0/0"]
-  ]
-  */
+    
+    
   }
 
+  // these are the new vertices
   getPolygons(vertices)
   {
     if (!this.found)
         return [];
 
-    if (this.faces[0] && this.faces[0].v.length === 3)
-      return this.getTriangles(vertices)
-    else
-    {
-      //return this.convertQuadListToTr(this.getQuadrant(vertices))
-      return this.getQuadrant(vertices)
-    }
-  }
-
-  // list of the vertices
-  getTriangles (vertices) {
-/*    if (this.faces[0].v.length !== 3)
-      return []*/
-
-    return this.faces.map(face => {
-      let v = face.v.map(value => {
-        return vertices[value - 1]
-      })
-      return new Triangle(v[0], v[1], v[2], face)
+    let pols = []
+    this.faces.map(face => {
+        pols = pols.concat(this.convertFaceToTr(face, vertices))      
     })
+    return pols
   }
 
-  getQuadrant (vertices) {
-/*    if (this.faces[0].length !== 4)
-      return [];*/
 
-    return this.faces.map(face => {
-      let v = face.v.map(value => {
-        return vertices[value - 1]
-      })
-      return new Quadrant(v[0], v[1], v[2], v[3], face)
-    })
-  }
-
-  convertQuadrantToTriangles(quad)
+  convertFaceToTr(face, vertices)
   {
-    return [new Triangle(quad.v1, quad.v2, quad.v3, quad.face, quad.color), new Triangle(quad.v1, quad.v3, quad.v4, quad.face, quad.color)];
+    if (face.v.length === 3)
+    {
+      let v1 = vertices[face.v[0]-1]
+      let v2 = vertices[face.v[1]-1]
+      let v3 = vertices[face.v[2]-1]
+
+      return new Triangle(v1, v2, v3, face)
+    }
+    
+    // add Quadratique to Pols
+    if (face.v.length === 4)
+    {
+      let v1 = vertices[face.v[0]-1]
+      let v2 = vertices[face.v[1]-1]
+      let v3 = vertices[face.v[2]-1]
+      let v4 = vertices[face.v[3]-1]
+
+      // the face1 & face2 should be a Deep copy of face
+      let face2 = {
+        v:  [face.v[0], face.v[2], face.v[3]],
+        vt: [face.vt[0], face.vt[2], face.vt[3]],
+        vn: [face.vn[0], face.vn[2], face.vn[3]]
+      }
+
+      let face1 = {
+        v:  [face.v[0], face.v[1], face.v[2]],
+        vt: [face.vt[0], face.vt[1], face.vt[1]],
+        vn: [face.vn[0], face.vn[1], face.vn[1]]
+      }
+/*      // This is a Deep Copy.
+      let face1 = JSON.parse(JSON.stringify(face))
+      // to remove last item (v4)
+      face1.v.pop()
+      face1.vt.pop()
+      face1.vn.pop()*/
+
+      //console.log(new Triangle(v1, v2, v3, face1), new Triangle(v1, v3, v4, face2))
+      return [new Triangle(v1, v2, v3, face1), new Triangle(v1, v3, v4, face2)];
+    }
+
+  }
+
+/*  convertQuadrantToTriangles(quad)
+  {
+    let face2 = {
+      v:  [quad.face.v[0], quad.face.v[2], quad.face.v[3]],
+      vt: [quad.face.vt[0], quad.face.vt[2], quad.face.vt[3]],
+      vn: [quad.face.vn[0], quad.face.vn[2], quad.face.vn[3]]
+    }
+
+    let face1 = quad.face
+    // to remove last item (v4)
+    face1.v.pop()
+    face1.vt.pop()
+    face1.vn.pop()
+
+    return [new Triangle(quad.v1, quad.v2, quad.v3, face1, quad.color), new Triangle(quad.v1, quad.v3, quad.v4, face2, quad.color)];
   }
 
   convertQuadListToTr(list)
   {
-    return list.map(quad => {
-      return newList.concat(this.convertQuadrantToTriangles(quad));
-    });
-  }
+    let result = []
+    list.map(quad => {
+      result.concat(this.convertQuadrantToTriangles(quad))
+    })
+    return result
+  }*/
 }

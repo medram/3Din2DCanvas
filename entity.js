@@ -8,9 +8,11 @@ import Mesh from './mesh.js'
 export default class Entity {
     constructor(objFileName = false, pos = false, fillStyleColor = '') {
         // the center of the OBJ
+        
+        this.scaleValue = 1
         this.pos = typeof pos === 'object' ? pos : new Vector3()
         this.mesh = objFileName ? new Mesh(objFileName) : false
-        this.modelMatrix = Math3d.translate(Math3d.rotate(Math3d.scale(Math3d.mat4(1.0), 1), Math3d.radians(0), new Vector3(0, 1, 0)), this.pos)
+        this.modelMatrix = Math3d.translate(Math3d.rotate(Math3d.scale(Math3d.mat4(1.0), this.scaleValue), Math3d.radians(0), new Vector3(0, 1, 0)), this.pos)
         this.newVertices = []
         this.newNormals = []
         this.newPos = this.pos
@@ -54,6 +56,12 @@ export default class Entity {
     {
         if (typeof angle == 'number' && typeof axe == 'object')
             this.modelMatrix = Math3d.translate(Math3d.rotate(Math3d.scale(Math3d.mat4(1.0), 1), Math3d.radians(angle), axe), this.pos);
+    }
+
+    setScale(value)
+    {
+        if (value > 0)
+            this.scaleValue = value
     }
 
     getModelMatrix()

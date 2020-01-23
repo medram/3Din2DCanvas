@@ -6,12 +6,12 @@ export default class LoadOBJ {
     constructor(filename)
     {
         console.log("Loading OBJ file: " + filename);
+        this.filename = filename
         this.data = this.readObjFile('http://' + Configs.server.host + ':' + Configs.server.port + "/inc/Objs/" + filename);
         this.vertices = [];
         this.faces = [];
         this.normals = [];
         this.textures = [];
-        
         this.fileFound = false;
 
         this.parse();
@@ -53,14 +53,18 @@ export default class LoadOBJ {
                 }
                 line.slice(2).split(' ').map((part, i) => {
                     part = part.split('/').map(value => parseInt(value))
-                    face.v[i] = part[0]
-                    face.vt[i] = part[1]
-                    face.vn[i] = part[2]
+                    face.v.push(part[0])
+                    face.vt.push(part[1])
+                    face.vn.push(part[2])
                 })
+/*                if (this.filename == 'monkey.obj')
+                    console.log(face);*/
                 this.faces.push(face);
+                face = null
             }
         });
-        //console.log(this.faces);
+/*        if (this.filename == 'monkey.obj')
+            console.log(this.faces);*/
     }
 
     readObjFile(path) {

@@ -5,6 +5,7 @@ import { Vector4, Vector3, Vector2 } from './math3d.js';
 import Entity from './entity.js';
 import Colors from './colors.js'
 import Light from './light.js'
+import { Camera } from './camera.js'
 
 // init resizing canvas
 window.onload = function (){
@@ -14,15 +15,18 @@ window.onload = function (){
 
 function main()
 {
-	const game = new Game('my-canvas');
-	const cube = new Entity('cube.obj', new Vector4(0, 0, 0, 1), Colors.YELLOW);
-	const obj = new Entity('exampleOBJ.obj', new Vector4(2, 0, 4, 1));
-	const obj2 = new Entity('lamp.obj', new Vector4(-2, 0, -6, 1), Colors.YELLOW);
-	//new Vector4(6, 0, -7, 1)
-	const obj3 = new Entity('lowPolyTree.obj', new Vector4(6, 0, -7, 1), Colors.BLUE);
-	const obj4 = new Entity('pine.obj', new Vector4(-7, 0, -7, 1));
-	const obj5 = new Entity('stall.obj', new Vector4(-2, 0, -12, 1));
-	const plane = new Entity('cube.obj', new Vector4(1, 1, 1, 1), Colors.BLUE);
+	const camera = new Camera(new Vector3(-15.5, 8, 17), 0, -45)
+	const game = new Game('my-canvas', camera);
+	window.game = game
+	
+	const test = new Entity('sword.obj', new Vector3(0, 10, 0), Colors.WHITE);
+	const cube = new Entity('cube.obj', new Vector3(0, 1, 0), Colors.YELLOW);
+	const obj = new Entity('exampleOBJ.obj', new Vector3(0, 0, -10), Colors.PURPLE);
+	const obj2 = new Entity('lamp.obj', new Vector3(-2, 0, -5), Colors.YELLOW);
+	const obj3 = new Entity('lowPolyTree.obj', new Vector3(6, 0, -7), Colors.GREEN);
+	const obj4 = new Entity('pine.obj', new Vector3(-7, 0, -7), Colors.GREEN);
+	const obj5 = new Entity('stall.obj', new Vector3(10, 0, 0), Colors.BLUE);
+	const plane = new Entity('plane2.obj', new Vector3(1, 0, 1), Colors.BLUE);
 
 	const light = new Light(new Vector4(1, -1, 0, 1), new Vector4(5, 5, -5, 1))
 
@@ -37,9 +41,10 @@ function main()
 	game.world.drawable.push(plane)
 	game.world.updateable.push(plane)
 
-/*	game.world.drawable.push(obj);
+	obj.rotate(-130, new Vector3(0, 1, 0))
+	game.world.drawable.push(obj);
 	game.world.updateable.push(obj);
-*/	
+	
 	game.world.drawable.push(obj2);
 	game.world.updateable.push(obj2);
 	
@@ -50,6 +55,13 @@ function main()
 	game.world.updateable.push(obj4);
 
 
+	//test.setRotation(-90, new Vector3(1, 0, 0))
+	test.setScale(0.2)
+	game.world.drawable.push(test);
+	game.world.updateable.push(test);
+
+
+	obj5.rotate(90, new Vector3(0, 1, 0))
 	game.world.drawable.push(obj5);
 	game.world.updateable.push(obj5);
 
@@ -60,6 +72,7 @@ function main()
 		
 		/*console.clear();
 		console.log('fps:' + this.frames.toFixed(1));*/
+		test.rotate(totalAngle, new Vector3(0, 0, 1));
 		cube.rotate(totalAngle, new Vector3(0, 1, 0));
 		light.rotate(totalAngle, new Vector3(0, 1, 0));
 		this.update();

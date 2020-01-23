@@ -6,12 +6,12 @@ import Configs from "./configs.js";
 
 export default class World
 {
-    constructor(game)
+    constructor(game, camera)
     {
         this.updateable = [];
         this.drawable = [];
         this.game = game;
-        this.camera = new Camera();
+        this.camera = camera;
         this.polygonsList = [];
         this.projectionMatrix = null
         this.lights = []

@@ -5,26 +5,33 @@ import Colors, { nextColor } from "./colors.js";
 
 export default class Input
 {
-    constructor(game)
+    constructor()
     {
-        this.game = game;
         this.Keyboard = Keyboard;
-//        this.mouse = new Mouse();
         this.keysPressed = [];
         this.keysUp = [];
     }
 
-    update()
+    update(game)
     {
         //console.log(this.keysUp);
-        if (this.game.input.keyup(Keyboard.KEY_1))
+        if (this.keyup(Keyboard.KEY_1))
+        {
             Configs.render.fill = !Configs.render.fill
+            console.log('Note: Fill traingles: ', Configs.render.fill)
+        }
 
-        if (this.game.input.keyup(Keyboard.KEY_2))
+        if (this.keyup(Keyboard.KEY_2))
+        {
             Configs.render.clipping = !Configs.render.clipping
+            console.log('Note: Clipping Mode: ', Configs.render.clipping)
+        }
 
-        if (this.game.input.keyup(Keyboard.KEY_3))
-            Configs.render.fillStyle = nextColor()
+        if (this.keyup(Keyboard.KEY_3))
+        {
+            Configs.render.fakeNormals = !Configs.render.fakeNormals
+            console.log('Note: FakeNormals Mode: ', Configs.render.fakeNormals)
+        }
 
         // clear Up keys (important)
         this.keysUp = []

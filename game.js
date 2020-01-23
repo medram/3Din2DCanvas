@@ -6,7 +6,7 @@ import Configs from './configs.js';
 
 
 export default class Game {
-    constructor(id) {
+    constructor(id, camera) {
         
         this.fps = 30;
         this.interval = 1000 / this.fps;
@@ -26,7 +26,7 @@ export default class Game {
 
         this.input = new Input(this);
         this.init(id);
-        this.world = new World(this);
+        this.world = new World(this, camera);
         this.render = new Render(this);
     }
 

@@ -8,6 +8,7 @@ let Configs = {
         strokeStyle: Colors.WHITE,
         font: '14px Arial',
         clipping: false,
+        fakeNormals: false
     },
     server: {
         host: 'localhost',

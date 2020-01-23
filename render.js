@@ -2,7 +2,7 @@ import { Vector2, Vector3, Vector4, Quadrant } from "./math3d.js";
 import Triangle from "./Triangle.js";
 import Configs from "./configs.js";
 import * as Math3d from "./math3d.js";
-import * as util from './utils.js';
+import * as utils from './utils.js';
 import Colors from './colors.js'
 
 export default class Render
@@ -142,8 +142,6 @@ export default class Render
         //-------------- for near plane ---------------
         polygonsList.map(pol => {
             Math3d.clipAgainstPlane(new Vector3(0, 0, -0.6), new Vector3(0, 0, -1), pol, out);
-            //newList = newList.concat(out);
-            //out = [];
         });
 
         polygonsList = out;
@@ -211,13 +209,20 @@ export default class Render
         let contrast = null
         let color = null
         polygonsList.map((pol, i) => {
-            //perp = normalsList[facesList[i].vn[0]-1]
-            perp = normalsList[pol.face.vn[0]-1]
-            //if (!perp) console.log(pol.face)
-            contrast = (perp.dot(lightSource)+1)*0.5
-            color = (contrast*220+20).toFixed(0) // the color range should be 0~255 (but 15~240 is better)
-            //pol.color = `rgb(${color}, ${color}, ${color})`
-            pol.color = new Uint8Array([color, color, color, 255]) // 255 for opacity
+            try {
+                perp = normalsList[pol.face.vn[0]-1]
+                
+                if (Configs.render.fakeNormals && perp === undefined)
+                    perp = Math3d.normalize(pol.v2.cross(pol.v3))    
+
+                contrast = (perp.dot(lightSource)+1)*0.5
+                //color = (contrast*220+20).toFixed(0) // the color range should be 0~255 (but 20~240 is better)
+                // the color range should be 0~255 (but 20~240 is better)
+                pol.color = utils.convertColor(contrast, pol.color) // 255 for opacity
+                //pol.color = new Uint8Array([color, color, color, 255]) // 255 for opacity
+            } catch (err){
+                // just pass
+            }
         })
 
         //################### Project the all poligons to the seen #################
@@ -250,39 +255,9 @@ export default class Render
             return pol;
         });
 
-        //console.log('Polygons: ' + polygonsList.length);
-        // sort Polygons
-        /*polygonsList.sort(function (pol1, pol2) {
-            // for triangles
-            if (typeof pol1.v4 === 'undefined' && typeof pol2.v4 === 'undefined')
-                return util.avgTrZ(pol1) - util.avgTrZ(pol2);
-            // for quadrants
-            else if (typeof pol1.v4 !== 'undefined' && typeof pol2.v4 !== 'undefined')
-                return util.avgQuadZ(pol1) - util.avgQuadZ(pol2);
-            // for mix
-            else if (typeof pol1.v4 === 'undefined' && typeof pol2.v4 !== 'undefined')
-                return util.avgTrZ(pol1) - util.avgQuadZ(pol2);
-            else
-                return util.avgQuadZ(pol1) - util.avgTrZ(pol2);    
-        });*/
-
-        // render a Polygons
-/*        polygonsList.map(pol => {
-            if (typeof pol.v4 === 'undefined')
-                this.game.render.renderTriangle(this.game.render.screenSpaceTr(pol));
-            else
-                this.game.render.renderQuadrant(this.game.render.screenSpaceQuad(pol));
-        });*/
-
-
-/*        let pol = new Triangle(new Vector2(50, 183), new Vector2(27, 204), new Vector2(11, 177), Colors.GREEN) 
-        polygonsList = [pol]
-*/
-
         //console.log(polygonsList)
 
         polygonsList.map(pol => {
-
 
             // convert from 0 to 1 to screen scall (in pixels)
             pol.v1.x = Math.round(pol.v1.x * width + width*0.5)
@@ -321,6 +296,7 @@ export default class Render
                     b = Math3d.Area2(pol.v3, pol.v1, x, y)      // aria of triangle (v3, v1, p)
                     c = Math3d.Area2(pol.v1, pol.v2, x, y)      // aria of triangle (v1, v2, p)
 
+
                     // check x & y of Point P if is inside the 2D triangle.
                     if (a >= 0 && b >= 0 && c >= 0)
                     {
@@ -330,50 +306,25 @@ export default class Render
                         c /= area
 
                         // calcutate Z coordinate of P using a, b & c  
-                        //z = a * pol.v1.z + b * pol.v2.z + c * pol.v3.z
-                        z = 1 / (a / pol.v1.z + b / pol.v2.z + c / pol.v3.z)
+                        z = a * pol.v1.z + b * pol.v2.z + c * pol.v3.z
+                        //z = 1 / (a / pol.v1.z + b / pol.v2.z + c / pol.v3.z)
 
                         if (z > this.Z_Buffer[x][y])
                         {
                             this.Z_Buffer[x][y] = z // distance from camera to the traingle
                             this.FrameBuffer[x][y] = pol.color
                         }
-                        /*if (a.toFixed(2) == 0 || b.toFixed(2) == 0 || c.toFixed(2) == 0)
-                        {
-                            this.Z_Buffer[x][y] = z
-                            this.FrameBuffer[x][y] = Colors.RED
-                        }*/
                     }
                 }
             }
-
-            //render bbox 
-/*            this.game.ctx.fillStyle = Colors.WHITE
-            this.game.ctx.strokeStyle = Colors.WHITE
-            this.game.ctx.beginPath();
-            this.game.ctx.lineWidth = Configs.render.lineWidth;
-            this.game.ctx.moveTo(Xmin, Ymin);
-            this.game.ctx.lineTo(Xmax, Ymin);
-            this.game.ctx.lineTo(Xmax, Ymax);
-            this.game.ctx.lineTo(Xmin, Ymax);
-            this.game.ctx.lineTo(Xmin, Ymin);
-            //this.game.ctx.closePath();
-            this.game.ctx.stroke();*/
-
-            // render pol
-/*            this.game.ctx.fillStyle = Colors.YELLOW
-            this.renderTriangle(pol)*/
-
-
         })
 
-        //exit()
         polygonsList = null
     }
 
 
 
-    renderTriangle(tr) {
+    /*renderTriangle(tr) {
         //console.log(tr);
         
         this.game.ctx.beginPath();
@@ -386,9 +337,9 @@ export default class Render
         if(Configs.render.fill)
             this.game.ctx.fill();
         this.game.ctx.stroke();
-    }
+    }*/
     
-    renderQuadrant(quad)
+    /*renderQuadrant(quad)
     {
         this.game.ctx.beginPath();
         this.game.ctx.lineWidth = Configs.render.lineWidth;
@@ -402,36 +353,27 @@ export default class Render
             this.game.ctx.fill();
         this.game.ctx.stroke();
 
-    }
+    }*/
 
-    screenSpace(v)
+/*    screenSpace(v)
     {
         return new Vector2(
             v.x * 0.5,
             -v.y * 0.5
         );
-        /*
-        return new Vector2(
-            this.game.canvas.width * v.x * 0.5,
-            this.game.canvas.height * -v.y * 0.5
-        );*/
-    }
+    }*/
 
-    screenSpaceTr(tr)
+/*    screenSpaceTr(tr)
     {
-        /* if (tr.v1.z > 0 || tr.v2.z > 0 || tr.v3.z > 0)
-            console.log(tr);
-         *///console.log(tr.v1.z);
-
         return new Triangle(
             this.screenSpace(tr.v1),
             this.screenSpace(tr.v2),
             this.screenSpace(tr.v3)
         );
         //return tr;
-    }
+    }*/
 
-    screenSpaceQuad(quad)
+/*    screenSpaceQuad(quad)
     {
         return new Quadrant(
             this.screenSpace(quad.v1),
@@ -439,7 +381,7 @@ export default class Render
             this.screenSpace(quad.v3),
             this.screenSpace(quad.v4)
         );
-    }
+    }*/
 
     renderPoint(v)
     {
@@ -448,10 +390,9 @@ export default class Render
 
     clear()
     {
-        //this.game.ctx.clearRect(-this.game.canvas.width / 2, -this.game.canvas.height / 2, this.game.canvas.width, this.game.canvas.height);
-        this.game.ctx.fillStyle = this.DEFAULT_FRAMEBUFFER_COLOR
-        //this.game.ctx.clearRect(0, 0, this.game.canvas.width, this.game.canvas.height);
-        this.game.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+        this.game.ctx.clearRect(0, 0, this.game.canvas.width, this.game.canvas.height);
+        //this.game.ctx.fillStyle = this.DEFAULT_FRAMEBUFFER_COLOR
+        //this.game.ctx.fillRect(0, 0, this.game.canvas.width, this.game.canvas.height);
     }
 
 

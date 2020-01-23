@@ -75,41 +75,9 @@ export function Area2(a, b, x, y)
 
 export function isPointInsideTriangle(v0, v1, v2, x, y)
 {
-  //inside = edgeFunction(v0, v1, x, y) && edgeFunction(v1, v2, x, y) && edgeFunction(v2, v0, x, y)
   return edgeFunction(v0, v1, x, y) && edgeFunction(v1, v2, x, y) && edgeFunction(v2, v0, x, y)
 }
 
-export function Rastoration(v0, v1, v2, x, y)
-{
-  return {
-    isPointInsideTriangle: isPointInsideTriangle(v0, v1, v2, x, y),
-    //inLine: () => parseInt(Area2(v0, v1, x, y)*0.09) == 0 || parseInt(Area2(v1, v2, x, y)*0.09) == 0 || parseInt(Area2(v2, v0, x, y)*0.09) == 0,
-    inLine: () => false,
-    getZ: () => {
-      /*============== This is how Z has been catculated =================*/
-      // a+b+c= 1
-      let area = Area(v0, v1, v2)
-      let a = Area2(v1, v2, x, y) / area
-      let b = Area2(v2, v0, x, y) / area
-      let c = Area2(v0, v1, x, y) / area
-      return a * v0.z + b * v1.z + c * v2.z
-
-      
-      /*============ But we should rediuce the Z catculation =============  */    
-/*      let area = Area(v0, v1, v2)
-      //console.log(area)
-      let b = Area2(v2, v0, x, y) / area
-      let c = Area2(v0, v1, x, y) / area
-      return v0.z + b * (v1.z - v0.z) + c * (v2.z - v0.z)*/
-
-/*      let area = Area(v0, v1, v2)
-      let a = Area2(v1, v2, x, y) / area
-      let b = Area2(v2, v0, x, y) / area
-      let c = Area2(v0, v1, x, y) / area
-      return  1 / (a / v0.z + b / v1.z + c / v2.z)*/
-    }
-  }
-}
 
 
 export function perpendicularOnTr(tr)
@@ -470,20 +438,21 @@ export function intersectPlane(planePos, planeNormal, startP, endP)
 
 export function dist(planePos, planeNormal, point)
 {
-  let N = normalize(point);
-  return planeNormal.x * point.x + planeNormal.y * point.y + planeNormal.z * point.z - planeNormal.dot(planePos);
+  //let N = normalize(point);
+  return (planeNormal.x * point.x + planeNormal.y * point.y + planeNormal.z * point.z) - planeNormal.dot(planePos);
+  //return planeNormal.dot(point.sub(planePos))
 }
 
 export function clipAgainstPlane(planePos, planeNormal, pol, out)
 {
   // check if polygon is a Triangle or Quadrant
-  if (pol.v4)
-    return clipQuadAgainstPlane(planePos, planeNormal, pol, out);
+  /*if (pol.v4 !== undefined)
+    return clipQuadAgainstPlane(planePos, planeNormal, pol, out);*/
 
   return clipTrAgainstPlane(planePos, planeNormal, pol, out);
 }
 
-export function clipQuadAgainstPlane(planePos, planeNormal, quad, out)
+/*export function clipQuadAgainstPlane(planePos, planeNormal, quad, out)
 {
   planeNormal = normalize(planeNormal);
   let insidePoints = [];
@@ -525,7 +494,7 @@ export function clipQuadAgainstPlane(planePos, planeNormal, quad, out)
     clipTrAgainstPlane(planePos, planeNormal, list[0], out);
     clipTrAgainstPlane(planePos, planeNormal, list[1], out);
   }
-}
+}*/
 
 export function clipTrAgainstPlane(planePos, planeNormal, tr, out)
 {
@@ -566,20 +535,24 @@ export function clipTrAgainstPlane(planePos, planeNormal, tr, out)
   
   if (insidePoints.length == 1 && outsidePoints.length == 2)
   {
+    //tr.color = Colors.RED
     out.push(new Triangle(
       insidePoints[0],
-        intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]),
         intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[1]),
-        tr.face
+        intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]),
+        tr.face,
+        tr.color
       ));
     return 1;
   }
 
   if (insidePoints.length == 2 && outsidePoints.length == 1)
   {
+    //tr.color = Colors.GREEN
     let tr1 = new Triangle(insidePoints[0], insidePoints[1], intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]), tr.face, tr.color);
     out.push(tr1);
-    out.push(new Triangle(insidePoints[1], tr1.v3, intersectPlane(planePos, planeNormal, insidePoints[1], outsidePoints[0]), tr.face, tr.color));
+    //tr.color = Colors.ORANGE
+    out.push(new Triangle(tr1.v3, insidePoints[1], intersectPlane(planePos, planeNormal, insidePoints[1], outsidePoints[0]), tr.face, tr.color));
 
     return 2;
   }
@@ -587,5 +560,7 @@ export function clipTrAgainstPlane(planePos, planeNormal, tr, out)
 
 export function convertQuadrantToTriangles(quad)
 {
-  return [new Triangle(quad.v1, quad.v2, quad.v3, quad.face, quad.color), new Triangle(quad.v1, quad.v3, quad.v4, quad.face, quad.color)];
+  //console.log('convertQuadrantToTriangles')
+  //quad.color = Colors.PURPLE
+  return [new Triangle(quad.v1, quad.v2, quad.v3, quad.face, quad.color), new Triangle(quad.v3, quad.v4, quad.v1, quad.face, quad.color)];
 }
