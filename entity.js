@@ -55,7 +55,7 @@ export default class Entity {
     rotate(angle, axe)
     {
         if (typeof angle == 'number' && typeof axe == 'object')
-            this.modelMatrix = Math3d.translate(Math3d.rotate(Math3d.scale(Math3d.mat4(1.0), 1), Math3d.radians(angle), axe), this.pos);
+            this.modelMatrix = Math3d.translate(Math3d.rotate(Math3d.scale(Math3d.mat4(1.0), this.scaleValue), Math3d.radians(angle), axe), this.pos);
     }
 
     setScale(value)

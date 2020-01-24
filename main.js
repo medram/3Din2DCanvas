@@ -57,8 +57,8 @@ function main()
 
 	//test.setRotation(-90, new Vector3(1, 0, 0))
 	test.setScale(0.2)
-	game.world.drawable.push(test);
-	game.world.updateable.push(test);
+/*	game.world.drawable.push(test);
+	game.world.updateable.push(test);*/
 
 
 	obj5.rotate(90, new Vector3(0, 1, 0))
@@ -70,8 +70,8 @@ function main()
 	game.loop(function (){
 		totalAngle += (angleSpeed * this.timestamp);
 		
-		/*console.clear();
-		console.log('fps:' + this.frames.toFixed(1));*/
+		console.clear();
+		console.log('fps:' + this.frames.toFixed(1));
 		test.rotate(totalAngle, new Vector3(0, 0, 1));
 		cube.rotate(totalAngle, new Vector3(0, 1, 0));
 		light.rotate(totalAngle, new Vector3(0, 1, 0));

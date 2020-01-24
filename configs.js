@@ -3,6 +3,7 @@ import Colors from "./colors.js"
 let Configs = {
     render: {
         fill: true,
+        drawLines: true,
         lineWidth: 1,
         fillStyle: Colors.GREEN,
         strokeStyle: Colors.WHITE,

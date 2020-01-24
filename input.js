@@ -14,13 +14,6 @@ export default class Input
 
     update(game)
     {
-        //console.log(this.keysUp);
-        if (this.keyup(Keyboard.KEY_1))
-        {
-            Configs.render.fill = !Configs.render.fill
-            console.log('Note: Fill traingles: ', Configs.render.fill)
-        }
-
         if (this.keyup(Keyboard.KEY_2))
         {
             Configs.render.clipping = !Configs.render.clipping
@@ -33,6 +26,17 @@ export default class Input
             console.log('Note: FakeNormals Mode: ', Configs.render.fakeNormals)
         }
 
+        if (this.keyup(Keyboard.KEY_5))
+        {
+            Configs.render.drawLines = !Configs.render.drawLines
+            console.log('drawLines mode', Configs.render.drawLines)
+        }
+        
+        if (this.keyup(Keyboard.KEY_6))
+        {
+            Configs.render.fill = !Configs.render.fill
+            console.log('Note: Fill traingles: ', Configs.render.fill)
+        }
         // clear Up keys (important)
         this.keysUp = []
     }

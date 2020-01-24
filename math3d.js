@@ -1,5 +1,6 @@
 import Triangle from "./triangle.js"
 import Colors from './colors.js'
+import Configs from './configs.js'
 
 export default null
 
@@ -76,6 +77,70 @@ export function Area2(a, b, x, y)
 export function isPointInsideTriangle(v0, v1, v2, x, y)
 {
   return edgeFunction(v0, v1, x, y) && edgeFunction(v1, v2, x, y) && edgeFunction(v2, v0, x, y)
+}
+
+// drow just line from v1 to v2
+export function drawLine(v1, v2, v3, width, height, FrameBuffer, Z_Buffer)
+{
+  let m = (v2.y - v1.y) / (v2.x - v1.x)
+
+  //let xmin = Math.min(v1.x, v2.x).toFixed(0)
+  //let xmax = Math.max(v1.x, v2.x).toFixed(0)
+  let xmin = Math.max(0, Math.min(width-1, Math.min(v1.x, v2.x)))
+  let xmax = Math.max(0, Math.min(width-1, Math.max(v1.x, v2.x)))
+
+/*  let ymin = Math.max(0, Math.min(height-1, Math.min(v1.y, v2.y)))
+  let ymax = Math.max(0, Math.min(height-1, Math.max(v1.y, v2.y)))*/
+
+  let area = null
+  let a = null
+  let b = null 
+  let c = null
+  
+  let z = null
+
+  let oldx = xmin
+  let tmp_yi1 = null
+  let tmp_yi = null
+  let yi1 = null
+  let yi = null
+  
+  for (let x = xmin; x <= xmax; x++)
+  {
+      // if the line is orisontal (that will acure and infinit loop)
+      if (Math.abs(m) === Infinity)
+      {
+        yi1 = v2.y
+        yi = v1.y
+      }
+      else
+      {
+        tmp_yi1 = Math.round((m * (x - v1.x) + v1.y))
+        tmp_yi = Math.round((m * (oldx - v1.x) + v1.y))
+        yi1 = Math.max(tmp_yi1, tmp_yi)
+        yi = Math.min(tmp_yi1, tmp_yi)
+      }
+
+      for (let y = yi; y <= yi1; y++)
+      {
+          area = Area(v1, v2, v3)  // the total area of the triangle (gon)
+          a = Area2(v2, v3, x, y)      // aria of triangle (v2, v3, p) 
+          b = Area2(v3, v1, x, y)      // aria of triangle (v3, v1, p)
+          c = Area2(v1, v2, x, y)      // aria of triangle (v1, v2, p)
+          
+          a /= area
+          b /= area
+          c /= area
+          
+          z = a * v1.z + b * v2.z + c * v3.z
+          if (z >= Z_Buffer[x][y])
+          {
+              Z_Buffer[x][y] = z // distance from camera to the traingle
+              FrameBuffer[x][y] = Configs.render.strokeStyle
+          }
+      }
+      oldx = x
+  }
 }
 
 

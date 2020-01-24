@@ -287,35 +287,47 @@ export default class Render
             let a = null
             let b = null
             let c = null
-            for (let x = Xmin; x <= Xmax; ++x)
+            
+            if (Configs.render.fill)
             {
-                for (let y = Ymin; y <= Ymax; ++y)
+                for (let x = Xmin; x <= Xmax; ++x)
                 {
-                    area = Math3d.Area(pol.v1, pol.v2, pol.v3)  // the total area of the triangle (poligon)
-                    a = Math3d.Area2(pol.v2, pol.v3, x, y)      // aria of triangle (v2, v3, p) 
-                    b = Math3d.Area2(pol.v3, pol.v1, x, y)      // aria of triangle (v3, v1, p)
-                    c = Math3d.Area2(pol.v1, pol.v2, x, y)      // aria of triangle (v1, v2, p)
-
-
-                    // check x & y of Point P if is inside the 2D triangle.
-                    if (a >= 0 && b >= 0 && c >= 0)
+                    for (let y = Ymin; y <= Ymax; ++y)
                     {
-                        // calculate the barycentric coordinates.
-                        a /= area
-                        b /= area
-                        c /= area
+                        area = Math3d.Area(pol.v1, pol.v2, pol.v3)  // the total area of the triangle (poligon)
+                        a = Math3d.Area2(pol.v2, pol.v3, x, y)      // aria of triangle (v2, v3, p) 
+                        b = Math3d.Area2(pol.v3, pol.v1, x, y)      // aria of triangle (v3, v1, p)
+                        c = Math3d.Area2(pol.v1, pol.v2, x, y)      // aria of triangle (v1, v2, p)
 
-                        // calcutate Z coordinate of P using a, b & c  
-                        z = a * pol.v1.z + b * pol.v2.z + c * pol.v3.z
-                        //z = 1 / (a / pol.v1.z + b / pol.v2.z + c / pol.v3.z)
 
-                        if (z > this.Z_Buffer[x][y])
+                        // check x & y of Point P if is inside the 2D triangle.
+                        if (a >= 0 && b >= 0 && c >= 0)
                         {
-                            this.Z_Buffer[x][y] = z // distance from camera to the traingle
-                            this.FrameBuffer[x][y] = pol.color
+                            // calculate the barycentric coordinates.
+                            a /= area
+                            b /= area
+                            c /= area
+
+                            // calcutate Z coordinate of P using a, b & c  
+                            z = a * pol.v1.z + b * pol.v2.z + c * pol.v3.z
+                            //z = 1 / (a / pol.v1.z + b / pol.v2.z + c / pol.v3.z)
+
+                            if (z > this.Z_Buffer[x][y])
+                            {
+                                this.Z_Buffer[x][y] = z // distance from camera to the traingle
+                                this.FrameBuffer[x][y] = pol.color
+                            }
                         }
                     }
-                }
+                } // end loop
+            }
+            
+            if (Configs.render.drawLines)
+            {
+                // x & y are in pixels scale
+                Math3d.drawLine(pol.v1, pol.v2, pol.v3, width, height, this.FrameBuffer, this.Z_Buffer)
+                Math3d.drawLine(pol.v2, pol.v3, pol.v1, width, height, this.FrameBuffer, this.Z_Buffer)
+                Math3d.drawLine(pol.v3, pol.v1, pol.v2, width, height, this.FrameBuffer, this.Z_Buffer)
             }
         })
 
