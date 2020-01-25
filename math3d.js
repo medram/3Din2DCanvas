@@ -86,8 +86,8 @@ export function drawLine(v1, v2, v3, width, height, FrameBuffer, Z_Buffer)
 
   //let xmin = Math.min(v1.x, v2.x).toFixed(0)
   //let xmax = Math.max(v1.x, v2.x).toFixed(0)
-  let xmin = Math.max(0, Math.min(width-1, Math.min(v1.x, v2.x)))
-  let xmax = Math.max(0, Math.min(width-1, Math.max(v1.x, v2.x)))
+  let xmin = Math.max(0, Math.min(v1.x, v2.x))
+  let xmax = Math.min(width-1, Math.max(v1.x, v2.x))
 
 /*  let ymin = Math.max(0, Math.min(height-1, Math.min(v1.y, v2.y)))
   let ymax = Math.max(0, Math.min(height-1, Math.max(v1.y, v2.y)))*/
@@ -110,8 +110,8 @@ export function drawLine(v1, v2, v3, width, height, FrameBuffer, Z_Buffer)
       // if the line is orisontal (that will acure and infinit loop)
       if (Math.abs(m) === Infinity)
       {
-        yi1 = v2.y
-        yi = v1.y
+        yi1 = Math.max(v1.y, v2.y)
+        yi = Math.min(v1.y, v2.y)
       }
       else
       {

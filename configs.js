@@ -1,15 +1,20 @@
 import Colors from "./colors.js"
+import { HexColors } from "./colors.js"
 
 let Configs = {
     render: {
         fill: true,
         drawLines: true,
-        lineWidth: 1,
         fillStyle: Colors.GREEN,
         strokeStyle: Colors.WHITE,
-        font: '14px Arial',
         clipping: false,
-        fakeNormals: false
+        fakeNormals: true
+    },
+    canvas: {
+        fillStyle: HexColors.GREEN,
+        strokeStyle: HexColors.WHITE,
+        font: '14px Arial',
+        lineWidth: 1
     },
     server: {
         host: 'localhost',

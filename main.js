@@ -19,7 +19,7 @@ function main()
 	const game = new Game('my-canvas', camera);
 	window.game = game
 	
-	const test = new Entity('sword.obj', new Vector3(0, 10, 0), Colors.WHITE);
+	const test = new Entity('monkey.obj', new Vector3(0, 5, 0), Colors.WHITE);
 	const cube = new Entity('cube.obj', new Vector3(0, 1, 0), Colors.YELLOW);
 	const obj = new Entity('exampleOBJ.obj', new Vector3(0, 0, -10), Colors.PURPLE);
 	const obj2 = new Entity('lamp.obj', new Vector3(-2, 0, -5), Colors.YELLOW);
@@ -55,10 +55,10 @@ function main()
 	game.world.updateable.push(obj4);
 
 
-	//test.setRotation(-90, new Vector3(1, 0, 0))
-	test.setScale(0.2)
-/*	game.world.drawable.push(test);
-	game.world.updateable.push(test);*/
+	//test.setScale(0.2)
+	//test.rotate(-90, new Vector3(1, 0, 0))
+	game.world.drawable.push(test);
+	game.world.updateable.push(test);
 
 
 	obj5.rotate(90, new Vector3(0, 1, 0))
@@ -68,14 +68,12 @@ function main()
 	let angleSpeed = 15; // 30 degrees per second
 	let totalAngle = 10;
 	game.loop(function (){
-		totalAngle += (angleSpeed * this.timestamp);
-		
-		console.clear();
-		console.log('fps:' + this.frames.toFixed(1));
-		test.rotate(totalAngle, new Vector3(0, 0, 1));
+		this.update();
+		totalAngle = (angleSpeed * this.timestamp);
+		//test.rotate(totalAngle, new Vector3(0, 0, 1));
+		test.rotate(totalAngle, new Vector3(0, 1, 0));
 		cube.rotate(totalAngle, new Vector3(0, 1, 0));
 		light.rotate(totalAngle, new Vector3(0, 1, 0));
-		this.update();
 		this.draw();
 		//this.stop();
 	});

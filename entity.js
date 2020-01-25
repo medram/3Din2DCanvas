@@ -12,17 +12,30 @@ export default class Entity {
         this.scaleValue = 1
         this.pos = typeof pos === 'object' ? pos : new Vector3()
         this.mesh = objFileName ? new Mesh(objFileName) : false
-        this.modelMatrix = Math3d.translate(Math3d.rotate(Math3d.scale(Math3d.mat4(1.0), this.scaleValue), Math3d.radians(0), new Vector3(0, 1, 0)), this.pos)
+        this.modelMatrix = null
         this.newVertices = []
         this.newNormals = []
         this.newPos = this.pos
         this.fillStyleColor = fillStyleColor
+        this.rotations = []
+
+        this.updateModelMatrix()
     }
     
     update(game)
     {
+        this.updateModelMatrix()
     }
     
+    updateModelMatrix()
+    {
+        this.modelMatrix = Math3d.scale(Math3d.mat4(1.0), this.scaleValue)
+        this.rotations.map(rotation => {
+            this.modelMatrix = Math3d.rotate(this.modelMatrix, Math3d.radians(rotation.angle), rotation.axe)
+        })
+        this.modelMatrix = Math3d.translate(this.modelMatrix, this.pos)
+    }
+
     draw(game)
     {
         //====================== Position =========================
@@ -55,7 +68,8 @@ export default class Entity {
     rotate(angle, axe)
     {
         if (typeof angle == 'number' && typeof axe == 'object')
-            this.modelMatrix = Math3d.translate(Math3d.rotate(Math3d.scale(Math3d.mat4(1.0), this.scaleValue), Math3d.radians(angle), axe), this.pos);
+            this.rotations.push({angle: angle, axe: axe})
+            //this.modelMatrix = Math3d.rotate(this.modelMatrix, Math3d.radians(angle), axe)
     }
 
     setScale(value)

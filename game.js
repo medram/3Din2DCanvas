@@ -79,9 +79,9 @@ export default class Game {
                     this.frames = 1000 / (Date.now() - this.oldTime);
                     this.oldTime = Date.now();
                     
-                    this.render.clear();
-                    callback.call(this); 
-                    this.input.clear();
+                    //this.render.clear();
+                    callback.call(this)
+                    this.input.clear()
                 }
                 this.refresh();
             };
@@ -100,11 +100,13 @@ export default class Game {
     draw()
     {
         // reinitial default values
-        this.ctx.lineWidth = Configs.render.lineWidth
-        this.ctx.fillStyle = Configs.render.fillStyle;
-        this.ctx.strokeStyle = Configs.render.strokeStyle;
-        this.ctx.font = Configs.render.font;
-
+        this.ctx.lineWidth = Configs.canvas.lineWidth
+        this.ctx.fillStyle = Configs.canvas.fillStyle;
+        this.ctx.strokeStyle = Configs.canvas.strokeStyle;
+        this.ctx.font = Configs.canvas.font;
+        this.ctx.imageSmoothingQuality = "high";
+        this.ctx.imageSmoothingEnabled = true;
+        
         this.world.draw();
     }
 

@@ -7,7 +7,7 @@ export default class LoadOBJ {
     {
         console.log("Loading OBJ file: " + filename);
         this.filename = filename
-        this.data = this.readObjFile('http://' + Configs.server.host + ':' + Configs.server.port + "/inc/Objs/" + filename);
+        this.data = this.readObjFile(`http://${Configs.server.host}:${Configs.server.port}/inc/Objs/${filename}`);
         this.vertices = [];
         this.faces = [];
         this.normals = [];

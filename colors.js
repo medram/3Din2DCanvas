@@ -1,14 +1,3 @@
-const HexColors = {
-	RED: 	'#EC407A',
-	GREEN: 	'#8BC34A',
-	BLUE: 	'#00B0FF',
-	PURPLE: '#AB47BC',
-	YELLOW: '#FFD600',
-	ORANGE: '#F9A825',
-	BLACK: 	'#000', //#212121
-	WHITE: 	'#ffffff'
-};
-
 const Colors = {
 	RED: 	new Uint8Array([236, 64, 122, 255]),
 	GREEN: 	new Uint8Array([139, 195, 74, 255]),
@@ -40,5 +29,16 @@ let nxtcolor = colorGenerator()
 export const nextColor = () => {
 	return nxtcolor.next().value
 }
+
+export const HexColors = {
+	RED: 	'#EC407A',
+	GREEN: 	'#8BC34A',
+	BLUE: 	'#00B0FF',
+	PURPLE: '#AB47BC',
+	YELLOW: '#FFD600',
+	ORANGE: '#F9A825',
+	BLACK: 	'#000', //#212121
+	WHITE: 	'#ffffff'
+};
 
 export default Colors

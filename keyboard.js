@@ -1,4 +1,4 @@
-export default Keyboard = {
+const Keyboard = {
 /*
     KEY_Z: 122,
     KEY_S: 115,
@@ -49,3 +49,5 @@ export default Keyboard = {
     KEY_8: 104,
     KEY_9: 105,
 };
+
+export default Keyboard

@@ -24,15 +24,6 @@ export default class Render
     init_ZBuffer()
     {
         this.Z_Buffer = new Array(this.game.canvas.width).fill(new Array(this.game.canvas.height).fill(this.MAX_ZBUFFER_SIZE))
-/*        this.Z_Buffer = []
-        let tmp = null
-        for (let x = 0; x < this.game.canvas.width; ++x)
-        {
-            tmp = []
-            for (let y = 0; y < this.game.canvas.height; ++y)
-                tmp.push(Colors.BLACK)
-            this.Z_Buffer.push(tmp)
-        }*/
     }
 
     // must be initilized with black color
@@ -44,32 +35,6 @@ export default class Render
         this.FrameBuffer = (new Array(width).fill(0)).map((item) => {
             return new Array(height).fill(this.DEFAULT_FRAMEBUFFER_COLOR)
         })
-
-/*        this.FrameBuffer = new Array(width)
-        for (let x = 0; x < width; ++x)
-            for (let y = 0; y < height; ++y)
-                this.FrameBuffer[x][y] = color*/
-
-/*        this.FrameBuffer = new Array(this.game.canvas.width).fill(0)
-        this.FrameBuffer = this.FrameBuffer.map(item => {
-            return new Array(this.game.canvas.height).fill(Colors.BLACK)
-        })*/
-
-        /*if (this.FrameBuffer === null)
-        {
-            //console.log('create buffer')
-            this.FrameBuffer = new Array(this.game.canvas.width).fill(0)
-            this.FrameBuffer = this.FrameBuffer.map(item => {
-                return new Array(this.game.canvas.height).fill(Colors.BLACK)
-            })
-        }
-        else
-        {
-            //console.log('refill')
-            for (let x = 0; x < this.game.canvas.width; ++x)
-                for (let y = 0; y < this.game.canvas.height; ++y)
-                    this.FrameBuffer[x][y] = Colors.BLACK
-        }*/
     }
 
     clearBuffers()
@@ -91,6 +56,7 @@ export default class Render
     // Render the FrameBuffer to the Screen
     renderFrameBuffer()
     {
+
         let imgData = this.game.ctx.createImageData(this.game.canvas.width, this.game.canvas.height)
 
         let color = null
@@ -108,15 +74,17 @@ export default class Render
             }
         }
 
-        this.game.ctx.putImageData(imgData, 0, 0)
-
-        /*
-        this.FrameBuffer.map((colorsColumn, x) => {
-            colorsColumn.map((color, y) => {
-                this.game.ctx.fillStyle = color
-                this.game.ctx.fillRect(x, y, 1, 1)
-            })
+        let options = {
+            //resizeQuality: "high"
+        }
+        /*createImageBitmap(imgData, options).then((imgBitmap) => {
+            this.game.ctx.drawImage(imgBitmap, 0, 0, this.game.canvas.width, this.game.canvas.height)
+            this.game.ctx.fillText(`FPS: ${this.game.frames.toFixed(0)}`, 10, 15)  
         })*/
+        this.game.ctx.putImageData(imgData, 0, 0)
+        this.game.ctx.fillText(`FPS: ${this.game.frames.toFixed(0)}`, 10, 20)
+        this.game.ctx.fillText(`Powred By: Mohammed Ramouchy`, 10, this.game.canvas.height - 40)
+        this.game.ctx.fillText(`Website: www.ramouchy.com`, 10, this.game.canvas.height - 20)
     }
 
     renderWorld(objs)
@@ -209,19 +177,17 @@ export default class Render
         let contrast = null
         let color = null
         polygonsList.map((pol, i) => {
-            try {
-                perp = normalsList[pol.face.vn[0]-1]
-                
-                if (Configs.render.fakeNormals && perp === undefined)
-                    perp = Math3d.normalize(pol.v2.cross(pol.v3))    
-
+            perp = normalsList[pol.face.vn[0]-1]
+            
+            if (Configs.render.fakeNormals && perp === undefined)
+                perp = Math3d.normalize(pol.v1.cross(pol.v2))
+            if (perp !== undefined)
+            {
                 contrast = (perp.dot(lightSource)+1)*0.5
                 //color = (contrast*220+20).toFixed(0) // the color range should be 0~255 (but 20~240 is better)
                 // the color range should be 0~255 (but 20~240 is better)
                 pol.color = utils.convertColor(contrast, pol.color) // 255 for opacity
                 //pol.color = new Uint8Array([color, color, color, 255]) // 255 for opacity
-            } catch (err){
-                // just pass
             }
         })
 
@@ -299,7 +265,6 @@ export default class Render
                         b = Math3d.Area2(pol.v3, pol.v1, x, y)      // aria of triangle (v3, v1, p)
                         c = Math3d.Area2(pol.v1, pol.v2, x, y)      // aria of triangle (v1, v2, p)
 
-
                         // check x & y of Point P if is inside the 2D triangle.
                         if (a >= 0 && b >= 0 && c >= 0)
                         {
@@ -334,71 +299,10 @@ export default class Render
         polygonsList = null
     }
 
-
-
-    /*renderTriangle(tr) {
-        //console.log(tr);
-        
-        this.game.ctx.beginPath();
-        this.game.ctx.lineWidth = Configs.render.lineWidth;
-        this.game.ctx.moveTo(tr.v1.x, tr.v1.y);
-        this.game.ctx.lineTo(tr.v2.x, tr.v2.y);
-        this.game.ctx.lineTo(tr.v3.x, tr.v3.y);
-        //this.game.ctx.closePath();
-        this.game.ctx.lineTo(tr.v1.x, tr.v1.y);
-        if(Configs.render.fill)
-            this.game.ctx.fill();
-        this.game.ctx.stroke();
-    }*/
-    
-    /*renderQuadrant(quad)
-    {
-        this.game.ctx.beginPath();
-        this.game.ctx.lineWidth = Configs.render.lineWidth;
-        this.game.ctx.moveTo(quad.v1.x, quad.v1.y);
-        this.game.ctx.lineTo(quad.v2.x, quad.v2.y);
-        this.game.ctx.lineTo(quad.v3.x, quad.v3.y);
-        this.game.ctx.lineTo(quad.v4.x, quad.v4.y);
-        //this.game.ctx.closePath();
-        this.game.ctx.lineTo(quad.v1.x, quad.v1.y);
-        if (Configs.render.fill)
-            this.game.ctx.fill();
-        this.game.ctx.stroke();
-
-    }*/
-
-/*    screenSpace(v)
-    {
-        return new Vector2(
-            v.x * 0.5,
-            -v.y * 0.5
-        );
-    }*/
-
-/*    screenSpaceTr(tr)
-    {
-        return new Triangle(
-            this.screenSpace(tr.v1),
-            this.screenSpace(tr.v2),
-            this.screenSpace(tr.v3)
-        );
-        //return tr;
-    }*/
-
-/*    screenSpaceQuad(quad)
-    {
-        return new Quadrant(
-            this.screenSpace(quad.v1),
-            this.screenSpace(quad.v2),
-            this.screenSpace(quad.v3),
-            this.screenSpace(quad.v4)
-        );
-    }*/
-
-    renderPoint(v)
+/*    renderPoint(v)
     {
         this.game.ctx.lineTo(v.x, v.y);
-    }
+    }*/
 
     clear()
     {
