@@ -6,9 +6,9 @@ import Traingle from './triangle.js'
 
 export default class Light extends Entity {
 
-	constructor(direction = new Vector3(0, 0, 0), pos = new Vector3(0, 0, 0))
+	constructor(direction = new Vector3(0, 0, 0), pos = new Vector3(0, 0, 0), color)
 	{
-		super('cube.obj', pos, Colors.YELLOW)
+		super('cube.obj', pos, color)
 		this._dir = Math3d.normalize(direction)
 		this.direction = Math3d.normalize(direction)
 		//this.modelMatrix = Math3d.translate(Math3d.rotate(Math3d.scale(Math3d.mat4(1.0), 1), Math3d.radians(0), new Vector3(0, 1, 0)), this.pos)

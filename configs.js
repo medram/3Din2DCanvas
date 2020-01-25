@@ -4,7 +4,7 @@ import { HexColors } from "./colors.js"
 let Configs = {
     render: {
         fill: true,
-        drawLines: true,
+        drawLines: false,
         fillStyle: Colors.GREEN,
         strokeStyle: Colors.WHITE,
         clipping: false,

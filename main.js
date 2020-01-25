@@ -20,7 +20,7 @@ function main()
 	window.game = game
 	
 	const test = new Entity('monkey.obj', new Vector3(0, 5, 0), Colors.WHITE);
-	const cube = new Entity('cube.obj', new Vector3(0, 1, 0), Colors.YELLOW);
+	const cube = new Entity('cube.obj', new Vector3(0, 1, 0), Colors.RED);
 	const obj = new Entity('exampleOBJ.obj', new Vector3(0, 0, -10), Colors.PURPLE);
 	const obj2 = new Entity('lamp.obj', new Vector3(-2, 0, -5), Colors.YELLOW);
 	const obj3 = new Entity('lowPolyTree.obj', new Vector3(6, 0, -7), Colors.GREEN);
@@ -28,7 +28,7 @@ function main()
 	const obj5 = new Entity('stall.obj', new Vector3(10, 0, 0), Colors.BLUE);
 	const plane = new Entity('plane2.obj', new Vector3(1, 0, 1), Colors.BLUE);
 
-	const light = new Light(new Vector4(1, -1, 0, 1), new Vector4(5, 5, -5, 1))
+	const light = new Light(new Vector3(1, -1, 0), new Vector3(1, 2, 1), Colors.ORANGE)
 
 	game.world.setLight(light);
 	//game.world.drawable.push(light);
@@ -72,7 +72,7 @@ function main()
 		totalAngle = (angleSpeed * this.timestamp);
 		//test.rotate(totalAngle, new Vector3(0, 0, 1));
 		test.rotate(totalAngle, new Vector3(0, 1, 0));
-		cube.rotate(totalAngle, new Vector3(0, 1, 0));
+		//cube.rotate(totalAngle, new Vector3(0, 1, 0));
 		light.rotate(totalAngle, new Vector3(0, 1, 0));
 		this.draw();
 		//this.stop();
