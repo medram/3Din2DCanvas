@@ -27,7 +27,6 @@ php -S localhost:5500
 And go to the browser & tap localhost:5500
 and there we go :D
 # Note:
-I'm using just the sorting algorithm for the trangles.
 
 ![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/1.png)
 
