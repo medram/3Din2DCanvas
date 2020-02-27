@@ -18,6 +18,8 @@ This 3D supports the folowing features:
 I will add these features in the future:
 - Anti-Aliasing (FXAA).
 - improving lines rendring.
+- Texturing
+- Smooth shading
 
 # How to use:
 To start a php server on the root folder of 3Din2Dcanvas, you could use:
