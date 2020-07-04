@@ -1,6 +1,6 @@
 # 3Din2DCanvas !
 Hi there!
-I've just created the 3D from scratch in 2D canvas (reinventing) using Javascript, Based on some 3D algorithms.
+I've just created the 3D from scratch in 2D canvas (reinventing the weel) using just pure Javascript, Based on some 3D algorithms.
 
 # Features:
 This 3D supports the folowing features:
@@ -15,9 +15,10 @@ This 3D supports the folowing features:
 - Lines rendring could be improved.
 
 # Next Features:
-I will add these features in the future:
+I will add these features on future:
 - Anti-Aliasing (FXAA).
 - improving lines rendring.
+- increasing FPS by improving some area rendering.
 
 # How to use:
 To start a php server on the root folder of 3Din2Dcanvas, you could use:
