@@ -1,6 +1,6 @@
 # 3Din2DCanvas !
 Hi there!
-I've just created the 3D from scratch in 2D canvas (reinventing the weel) using just pure Javascript, Based on some 3D algorithms.
+I've just created the 3D from scratch in 2D canvas (reinventing the wheel) using just pure Javascript, Based on some 3D algorithms.
 
 # Features:
 This 3D supports the folowing features:
@@ -15,10 +15,18 @@ This 3D supports the folowing features:
 - Lines rendring could be improved.
 
 # Next Features:
+<<<<<<< HEAD
 I will add these features on future:
 - Anti-Aliasing (FXAA).
 - improving lines rendring.
 - increasing FPS by improving some area rendering.
+=======
+I will add these features in the future:
+- Anti-Aliasing (FXAA).
+- improving lines rendring.
+- Texturing
+- Smooth shading
+>>>>>>> 38f88a1e3ca1b81ab66dcc34832ea8b427744bef
 
 # How to use:
 To start a php server on the root folder of 3Din2Dcanvas, you could use:
@@ -27,6 +35,7 @@ php -S localhost:5500
 ```
 And go to the browser & tap localhost:5500
 and there you go :D
+
 # Screensots:
 
 ![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/1.png)
