@@ -23,7 +23,8 @@ export default class Render
     // must be initilized with Infinty number
     init_ZBuffer()
     {
-        this.Z_Buffer = new Array(this.game.canvas.width).fill(new Array(this.game.canvas.height).fill(this.MAX_ZBUFFER_SIZE))
+        //this.Z_Buffer = new Array(this.game.canvas.width).fill(new Array(this.game.canvas.height).fill(this.MAX_ZBUFFER_SIZE))
+        this.Z_Buffer = new Array(this.game.canvas.width * this.game.canvas.height).fill(this.MAX_ZBUFFER_SIZE)
     }
 
     // must be initilized with black color
@@ -32,9 +33,11 @@ export default class Render
         let width = this.game.canvas.width
         let height = this.game.canvas.height
 
-        this.FrameBuffer = (new Array(width).fill(0)).map((item) => {
+/*        this.FrameBuffer = (new Array(width).fill(0)).map((item) => {
             return new Array(height).fill(this.DEFAULT_FRAMEBUFFER_COLOR)
-        })
+        })*/
+        //this.FrameBuffer = new Array(width * height * 4).fill(0)
+        this.FrameBuffer = new Uint8ClampedArray(width * height * 4).fill(0)
     }
 
     clearBuffers()
@@ -45,34 +48,22 @@ export default class Render
 
     clearZBuffer()
     {
-        this.Z_Buffer = this.Z_Buffer.map((xColumn) => xColumn.map((z) => this.MAX_ZBUFFER_SIZE))
+        //this.Z_Buffer = this.Z_Buffer.map((xColumn) => xColumn.map((z) => this.MAX_ZBUFFER_SIZE))
+        this.Z_Buffer.fill(this.MAX_ZBUFFER_SIZE)
     }
 
     clearFrameBuffer()
     {
-        this.FrameBuffer = this.FrameBuffer.map((colorsColumn) => colorsColumn.map((color) => this.DEFAULT_FRAMEBUFFER_COLOR))
+        //this.FrameBuffer = this.FrameBuffer.map((colorsColumn) => colorsColumn.map((color) => this.DEFAULT_FRAMEBUFFER_COLOR))
+        this.FrameBuffer.fill(0)
     }
 
     // Render the FrameBuffer to the Screen
     renderFrameBuffer()
     {
 
-        let imgData = this.game.ctx.createImageData(this.game.canvas.width, this.game.canvas.height)
+        let imgData = new ImageData(this.FrameBuffer, this.game.canvas.width, this.game.canvas.height)
 
-        let color = null
-        let i = 0
-        for (let y = 0; y < this.game.canvas.height; ++y)
-        {
-            for (let x = 0; x < this.game.canvas.width; ++x)
-            {
-                color = this.FrameBuffer[x][y]
-                imgData.data[i+0] = color[0]
-                imgData.data[i+1] = color[1]
-                imgData.data[i+2] = color[2]
-                imgData.data[i+3] = color[3]
-                i+=4
-            }
-        }
 
         let options = {
             //resizeQuality: "high"
@@ -253,6 +244,7 @@ export default class Render
             let a = null
             let b = null
             let c = null
+            let index = 0
             
             if (Configs.render.fill)
             {
@@ -273,14 +265,23 @@ export default class Render
                             b /= area
                             c /= area
 
-                            // calcutate Z coordinate of P using a, b & c  
+                            // calcutate Z coordinate of P using a, b & c
                             z = a * pol.v1.z + b * pol.v2.z + c * pol.v3.z
                             //z = 1 / (a / pol.v1.z + b / pol.v2.z + c / pol.v3.z)
 
-                            if (z > this.Z_Buffer[x][y])
+                            // pixel position
+                            index = (y * width + x)
+                            if (z > this.Z_Buffer[index])
                             {
-                                this.Z_Buffer[x][y] = z // distance from camera to the traingle
-                                this.FrameBuffer[x][y] = pol.color
+                                //this.Z_Buffer[x][y] = z // distance from camera to the traingle
+                                //this.FrameBuffer[x][y] = pol.color
+                                this.Z_Buffer[index] = z
+
+                                let [R, G, B, A] = pol.color
+                                this.FrameBuffer[index * 4 + 0] = R
+                                this.FrameBuffer[index * 4 + 1] = G
+                                this.FrameBuffer[index * 4 + 2] = B
+                                this.FrameBuffer[index * 4 + 3] = A
                             }
                         }
                     }
