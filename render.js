@@ -15,7 +15,8 @@ export default class Render
         this.MAX_ZBUFFER_SIZE = -Infinity
         this.DEFAULT_FRAMEBUFFER_COLOR = Colors.BLACK
         //this.objects = this.game.world
-        
+        this.imgData = null
+
         this.init_ZBuffer()
         this.init_FrameBuffer()
     }
@@ -62,7 +63,7 @@ export default class Render
     renderFrameBuffer()
     {
 
-        let imgData = new ImageData(this.FrameBuffer, this.game.canvas.width, this.game.canvas.height)
+        this.imgData = new ImageData(this.FrameBuffer, this.game.canvas.width, this.game.canvas.height)
 
 
         let options = {
@@ -72,7 +73,7 @@ export default class Render
             this.game.ctx.drawImage(imgBitmap, 0, 0, this.game.canvas.width, this.game.canvas.height)
             this.game.ctx.fillText(`FPS: ${this.game.frames.toFixed(0)}`, 10, 15)  
         })*/
-        this.game.ctx.putImageData(imgData, 0, 0)
+        this.game.ctx.putImageData(this.imgData, 0, 0)
         this.game.ctx.fillText(`FPS: ${this.game.frames.toFixed(0)}`, 10, 20)
         this.game.ctx.fillText(`Powred By: Mohammed Ramouchy`, 10, this.game.canvas.height - 40)
         this.game.ctx.fillText(`Website: www.ramouchy.com`, 10, this.game.canvas.height - 20)

@@ -133,10 +133,15 @@ export function drawLine(v1, v2, v3, width, height, FrameBuffer, Z_Buffer)
           c /= area
           
           z = a * v1.z + b * v2.z + c * v3.z
-          if (z >= Z_Buffer[x][y])
+          let index = y * width + x
+          if (z >= Z_Buffer[index])
           {
-              Z_Buffer[x][y] = z // distance from camera to the traingle
-              FrameBuffer[x][y] = Configs.render.strokeStyle
+              Z_Buffer[index] = z // distance from camera to the traingle
+              let [R, G, B, A] = Configs.render.strokeStyle
+              FrameBuffer[index * 4 + 0] = R
+              FrameBuffer[index * 4 + 1] = G
+              FrameBuffer[index * 4 + 2] = B
+              FrameBuffer[index * 4 + 3] = A
           }
       }
       oldx = x
