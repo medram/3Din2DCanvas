@@ -15,18 +15,12 @@ This 3D supports the folowing features:
 - Lines rendring could be improved.
 
 # Next Features:
-<<<<<<< HEAD
 I will add these features on future:
 - Anti-Aliasing (FXAA).
 - improving lines rendring.
 - increasing FPS by improving some area rendering.
-=======
-I will add these features in the future:
-- Anti-Aliasing (FXAA).
-- improving lines rendring.
 - Texturing
 - Smooth shading
->>>>>>> 38f88a1e3ca1b81ab66dcc34832ea8b427744bef
 
 # How to use:
 To start a php server on the root folder of 3Din2Dcanvas, you could use:
