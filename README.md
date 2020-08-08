@@ -32,18 +32,18 @@ and there you go :D
 
 # Screensots:
 
-![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/1.png)
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_1.png)
 
-![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/2.png)
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_2.png)
 
-![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/3.png)
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_3.png)
 
-![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/4.png)
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_4.png)
 
-![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/5.png)
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_5.png)
 
-![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/6.png)
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_6.png)
 
-![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/7.png)
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_7.png)
 
 
