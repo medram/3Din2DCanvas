@@ -4,6 +4,15 @@ import Configs from './configs.js'
 
 export default null
 
+/*
+  n is a float number
+  return should be bitween 0 and 1
+*/
+export function float_saturate(n)
+{
+  return n < 0 ? 0 : (n > 1 ? 1 : n);
+}
+
 export function bbox(pol, width, height) // pol is Traingle here
 {
   let Xmin = width  // set to the max value
@@ -79,76 +88,147 @@ export function isPointInsideTriangle(v0, v1, v2, x, y)
   return edgeFunction(v0, v1, x, y) && edgeFunction(v1, v2, x, y) && edgeFunction(v2, v0, x, y)
 }
 
+function flip_vect(v1, v2)
+{
+  let tmp = v1
+  v1 = v2
+  v2 = tmp
+}
+
 // drow just line from v1 to v2
 export function drawLine(v1, v2, v3, width, height, FrameBuffer, Z_Buffer)
 {
-  let m = (v2.y - v1.y) / (v2.x - v1.x)
+  let [R, G, B, A] = Configs.render.strokeStyle
+  let col_distance = Math.abs(v2.x - v1.x)
+  let row_distance = Math.abs(v2.y - v1.y)
 
-  //let xmin = Math.min(v1.x, v2.x).toFixed(0)
-  //let xmax = Math.max(v1.x, v2.x).toFixed(0)
-  let xmin = Math.max(0, Math.min(v1.x, v2.x))
-  let xmax = Math.min(width-1, Math.max(v1.x, v2.x))
+  let area = 0
+  let a, b, c = 0
+  let z = 0
+  let flipped = false
 
-/*  let ymin = Math.max(0, Math.min(height-1, Math.min(v1.y, v2.y)))
-  let ymax = Math.max(0, Math.min(height-1, Math.max(v1.y, v2.y)))*/
-
-  let area = null
-  let a = null
-  let b = null 
-  let c = null
-  
-  let z = null
-
-  let oldx = xmin
-  let tmp_yi1 = null
-  let tmp_yi = null
-  let yi1 = null
-  let yi = null
-  
-  for (let x = xmin; x <= xmax; x++)
+  if (col_distance == 0 && row_distance == 0)
   {
-      // if the line is orisontal (that will acure and infinit loop)
-      if (Math.abs(m) === Infinity)
+    // draw a line.
+    area = Area(v1, v2, v3)            // the total area of the triangle (gon)
+    a = Area2(v2, v3, v1.x, v1.y)      // aria of triangle (v2, v3, p) 
+    b = Area2(v3, v1, v1.x, v1.y)      // aria of triangle (v3, v1, p)
+    c = Area2(v1, v2, v1.x, v1.y)      // aria of triangle (v1, v2, p)
+    
+    a /= area
+    b /= area
+    c /= area
+    z = a * v1.z + b * v2.z + c * v3.z
+      
+    drawPoint(v1.x, v1.y, z, width, height, FrameBuffer, Z_Buffer)
+  }
+  else if (row_distance > col_distance)
+  {
+    if (v1.y > v2.y)
+    {
+      // flep a points
+      flip_vect(v1, v2)
+      flipped = true
+    }
+
+    let col = null
+    let t = null
+    for (let row = v1.y; row <= v2.y; ++row)
+    {
+      t = (row - v1.y) / row_distance
+      if (v1.x > v2.x)
+        col = Math.round((-col_distance * t + v1.x))
+      else      
+        col = Math.round((col_distance * t + v1.x))
+      
+      area = Area(v1, v2, v3)  // the total area of the triangle (gon)
+      if (flipped)
       {
-        yi1 = Math.max(v1.y, v2.y)
-        yi = Math.min(v1.y, v2.y)
+        a = Area2(v1, v3, col, row)      // aria of triangle (v2, v3, p) 
+        b = Area2(v3, v2, col, row)      // aria of triangle (v3, v1, p)
+        c = Area2(v2, v1, col, row)      // aria of triangle (v1, v2, p)
       }
       else
       {
-        tmp_yi1 = Math.round((m * (x - v1.x) + v1.y))
-        tmp_yi = Math.round((m * (oldx - v1.x) + v1.y))
-        yi1 = Math.max(tmp_yi1, tmp_yi)
-        yi = Math.min(tmp_yi1, tmp_yi)
+        a = Area2(v2, v3, col, row)      // aria of triangle (v2, v3, p) 
+        b = Area2(v3, v1, col, row)      // aria of triangle (v3, v1, p)
+        c = Area2(v1, v2, col, row)      // aria of triangle (v1, v2, p)
+      }
+      
+      a /= area
+      b /= area
+      c /= area
+
+      if (flipped)
+        z = a * v2.z + b * v1.z + c * v3.z
+      else
+        z = a * v1.z + b * v2.z + c * v3.z
+      drawPoint(col, row, z, width, height, FrameBuffer, Z_Buffer)
+    }
+  }
+  else
+  {
+    if (v1.x > v2.x)
+    {
+      // flep a points
+      flip_vect(v1, v2)
+      flipped = true
+    }
+
+    let row = 0
+    let t = 0
+    for (let col = v1.x; col <= v2.x; ++col)
+    {
+      t = (col - v1.x) / col_distance
+      if (v1.y > v2.y)
+        row = Math.round((-row_distance * t + v1.y))
+      else
+        row = Math.round((row_distance * t + v1.y))
+
+      area = Area(v1, v2, v3)  // the total area of the triangle (gon)
+      if (flipped)
+      {
+        a = Area2(v1, v3, col, row)      // aria of triangle (v2, v3, p) 
+        b = Area2(v3, v2, col, row)      // aria of triangle (v3, v1, p)
+        c = Area2(v2, v1, col, row)      // aria of triangle (v1, v2, p)
+      }
+      else
+      {
+        a = Area2(v2, v3, col, row)      // aria of triangle (v2, v3, p) 
+        b = Area2(v3, v1, col, row)      // aria of triangle (v3, v1, p)
+        c = Area2(v1, v2, col, row)      // aria of triangle (v1, v2, p)
       }
 
-      for (let y = yi; y <= yi1; y++)
-      {
-          area = Area(v1, v2, v3)  // the total area of the triangle (gon)
-          a = Area2(v2, v3, x, y)      // aria of triangle (v2, v3, p) 
-          b = Area2(v3, v1, x, y)      // aria of triangle (v3, v1, p)
-          c = Area2(v1, v2, x, y)      // aria of triangle (v1, v2, p)
-          
-          a /= area
-          b /= area
-          c /= area
-          
-          z = a * v1.z + b * v2.z + c * v3.z
-          let index = y * width + x
-          if (z >= Z_Buffer[index])
-          {
-              Z_Buffer[index] = z // distance from camera to the traingle
-              let [R, G, B, A] = Configs.render.strokeStyle
-              FrameBuffer[index * 4 + 0] = R
-              FrameBuffer[index * 4 + 1] = G
-              FrameBuffer[index * 4 + 2] = B
-              FrameBuffer[index * 4 + 3] = A
-          }
-      }
-      oldx = x
+      a /= area
+      b /= area
+      c /= area
+      if (flipped)
+        z = a * v2.z + b * v1.z + c * v3.z
+      else
+        z = a * v1.z + b * v2.z + c * v3.z
+      drawPoint(col, row, z, width, height, FrameBuffer, Z_Buffer)
+    }
   }
 }
 
+export function drawPoint(x, y, z, width, height, FrameBuffer, Z_Buffer)
+{
+  // don't write out of (FrameBuffer/Z_Buffer) range
+  if (x > width || x < 0 || y > height || y < 0)
+    return;
 
+  let index = y * width + x
+  if (z >= Z_Buffer[index])
+  {
+      Z_Buffer[index] = z // distance from camera to the traingle
+      let [R, G, B, A] = Configs.render.strokeStyle
+      FrameBuffer[index * 4 + 0] = R
+      FrameBuffer[index * 4 + 1] = G
+      FrameBuffer[index * 4 + 2] = B
+      FrameBuffer[index * 4 + 3] = A
+  }
+
+}
 
 export function perpendicularOnTr(tr)
 {
