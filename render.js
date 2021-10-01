@@ -1,5 +1,5 @@
 import { Vector2, Vector3, Vector4, Quadrant } from "./math3d.js";
-import Triangle from "./Triangle.js";
+import Triangle from "./triangle.js";
 import Configs from "./configs.js";
 import * as Math3d from "./math3d.js";
 import * as utils from './utils.js';
@@ -43,8 +43,8 @@ export default class Render
 
     clearBuffers()
     {
-        this.clearZBuffer()  
-        this.clearFrameBuffer()      
+        this.clearZBuffer()
+        this.clearFrameBuffer()
     }
 
     clearZBuffer()
@@ -71,7 +71,7 @@ export default class Render
         }
         /*createImageBitmap(imgData, options).then((imgBitmap) => {
             this.game.ctx.drawImage(imgBitmap, 0, 0, this.game.canvas.width, this.game.canvas.height)
-            this.game.ctx.fillText(`FPS: ${this.game.frames.toFixed(0)}`, 10, 15)  
+            this.game.ctx.fillText(`FPS: ${this.game.frames.toFixed(0)}`, 10, 15)
         })*/
         this.game.ctx.putImageData(this.imgData, 0, 0)
         this.game.ctx.fillText(`FPS: ${this.game.frames.toFixed(0)}`, 10, 20)
@@ -106,15 +106,15 @@ export default class Render
 
         polygonsList = out;
         out = [];
-        
+
         //-------------- for far plane ---------------
         polygonsList.map(pol => {
             Math3d.clipAgainstPlane(new Vector3(0, 0, -this.game.world.camera.far), new Vector3(0, 0, 1), pol, out);
         });
-        
+
         polygonsList = out;
         out = [];
-        
+
         if (Configs.render.clipping)
         {
             //-------------- left plane ---------------
@@ -122,41 +122,41 @@ export default class Render
             polygonsList.map(pol => {
                 Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
             });
-            
+
             polygonsList = out;
             out = [];
-            
+
             //-------------- right plane ---------------
             planeNormal = this.game.world.projectionMatrix.reverse().multiVector(new Vector4(1, 0, 0, 1));
             polygonsList.map(pol => {
                 Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
             });
-            
+
             polygonsList = out;
             out = [];
-            
+
             //-------------- top plane ---------------
             planeNormal = this.game.world.projectionMatrix.reverse().multiVector(new Vector4(0, -1, 0, 1));
             polygonsList.map(pol => {
                 Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
             });
-            
+
             polygonsList = out;
             out = [];
-            
+
             //-------------- buttom plane ---------------
             planeNormal = this.game.world.projectionMatrix.reverse().multiVector(new Vector4(0, 1, 0, 1));
             polygonsList.map(pol => {
                 Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
             });
-            
+
             polygonsList = out;
-            out = [];  
+            out = [];
         }
         //console.log('w=' + polygonsList[0].v1.w);
 
         //################### From Now on You Are Dealing just with poligons on the screen #################
-        
+
         //-------------- Tweak the contrast of pols' color -------------
         let width = this.game.canvas.width
         let height = this.game.canvas.height
@@ -164,13 +164,13 @@ export default class Render
         let lightEntity = this.game.world.lights[0]
         // choose just the first normal
         let lightSource = lightEntity.getNormals()[0]
-        
+
         let perp = null
         let contrast = null
         let color = null
         polygonsList.map((pol, i) => {
             perp = normalsList[pol.face.vn[0]-1]
-            
+
             if (Configs.render.fakeNormals && perp === undefined)
                 perp = Math3d.normalize(pol.v1.cross(pol.v2))
             if (perp !== undefined)
@@ -191,12 +191,12 @@ export default class Render
             pol.v1.x /= pol.v1.w;
             pol.v1.y /= pol.v1.w;
             pol.v1.z /= pol.v1.w;
-            
+
             pol.v2 = this.game.world.projectionMatrix.multiVector(pol.v2);
             pol.v2.x /= pol.v2.w;
             pol.v2.y /= pol.v2.w;
             pol.v2.z /= pol.v2.w;
-            
+
             pol.v3 = this.game.world.projectionMatrix.multiVector(pol.v3);
             pol.v3.x /= pol.v3.w;
             pol.v3.y /= pol.v3.w;
@@ -220,7 +220,7 @@ export default class Render
             // convert from 0 to 1 to screen scall (in pixels)
             pol.v1.x = Math.round(pol.v1.x * width + width*0.5)
             pol.v1.y = Math.round(-pol.v1.y * height + height*0.5)
-            //pol.v1.z *= -1 
+            //pol.v1.z *= -1
 
             pol.v2.x = Math.round(pol.v2.x * width + width*0.5)
             pol.v2.y = Math.round(-pol.v2.y * height + height*0.5)
@@ -236,7 +236,7 @@ export default class Render
             // clip the bbox by the screen to rediuce Rastoration process.
             let Xmin = Math.max(0, Math.min(width-1, Vmin[0]))
             let Ymin = Math.max(0, Math.min(height-1, Vmin[1]))
-            
+
             let Xmax = Math.max(0, Math.min(width-1, Vmax[0]))
             let Ymax = Math.max(0, Math.min(height-1, Vmax[1]))
 
@@ -246,7 +246,7 @@ export default class Render
             let b = null
             let c = null
             let index = 0
-            
+
             if (Configs.render.fill)
             {
                 for (let x = Xmin; x <= Xmax; ++x)
@@ -254,7 +254,7 @@ export default class Render
                     for (let y = Ymin; y <= Ymax; ++y)
                     {
                         area = Math3d.Area(pol.v1, pol.v2, pol.v3)  // the total area of the triangle (poligon)
-                        a = Math3d.Area2(pol.v2, pol.v3, x, y)      // aria of triangle (v2, v3, p) 
+                        a = Math3d.Area2(pol.v2, pol.v3, x, y)      // aria of triangle (v2, v3, p)
                         b = Math3d.Area2(pol.v3, pol.v1, x, y)      // aria of triangle (v3, v1, p)
                         c = Math3d.Area2(pol.v1, pol.v2, x, y)      // aria of triangle (v1, v2, p)
 
@@ -288,7 +288,7 @@ export default class Render
                     }
                 } // end loop
             }
-            
+
             if (Configs.render.drawLines)
             {
                 // x & y are in pixels scale

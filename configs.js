@@ -4,15 +4,15 @@ import { HexColors } from "./colors.js"
 let Configs = {
     render: {
         fill: true,
-        drawLines: false,
+        drawLines: true,
         fillStyle: Colors.GREEN,
-        strokeStyle: Colors.WHITE,
+        strokeStyle: Colors.BLACK,
         clipping: false,
         fakeNormals: true
     },
     canvas: {
         fillStyle: HexColors.GREEN,
-        strokeStyle: HexColors.WHITE,
+        strokeStyle: HexColors.BLACK,
         font: '14px Arial',
         lineWidth: 1
     },

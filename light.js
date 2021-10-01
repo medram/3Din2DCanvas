@@ -17,12 +17,12 @@ export default class Light extends Entity {
 	draw(game)
 	{
         super.draw(game)
-		
+
 		// To world coordinates (using Model Matrix)
         this.direction = Math3d.normalize(this.modelMatrix.multiVector(this._dir))
-        
+
         // To camera coordinates (using View Matrix)
-        this.direction = Math3d.normalize(game.world.camera.getViewMatrix().multiVector(this.direction)) 
+        this.direction = Math3d.normalize(game.world.camera.getViewMatrix().multiVector(this.direction))
 	}
 
 	getDirection()
