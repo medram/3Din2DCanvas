@@ -8,7 +8,7 @@ import Mesh from './mesh.js'
 export default class Entity {
     constructor(objFileName = false, pos = false, fillStyleColor = '') {
         // the center of the OBJ
-        
+
         this.scaleValue = 1
         this.pos = typeof pos === 'object' ? pos : new Vector3()
         this.mesh = objFileName ? new Mesh(objFileName) : false
@@ -21,12 +21,14 @@ export default class Entity {
 
         this.updateModelMatrix()
     }
-    
+
     update(game)
     {
         this.updateModelMatrix()
+        this.toWorldSpace()
+        //this.toViewSpace()
     }
-    
+
     updateModelMatrix()
     {
         this.modelMatrix = Math3d.scale(Math3d.mat4(1.0), this.scaleValue)
@@ -36,7 +38,7 @@ export default class Entity {
         this.modelMatrix = Math3d.translate(this.modelMatrix, this.pos)
     }
 
-    draw(game)
+    toWorldSpace()
     {
         //====================== Position =========================
         //this.newPos = this.modelMatrix.multiVector(this.pos)
@@ -47,24 +49,34 @@ export default class Entity {
         this.newVertices = this.mesh.vertices.map(v => {
             return this.modelMatrix.multiVector(v);
         });
-        
-        // To camera coordinates (using View Matrix)
-        this.newVertices = this.newVertices.map(v => {
-            return game.world.camera.getViewMatrix().multiVector(v);
-        });
 
         //====================== Normals ==========================
         // To world coordinates (using Model Matrix)
         this.newNormals = this.mesh.normals.map(v => {
             return Math3d.normalize(this.modelMatrix.multiVector(v));
         });
-        
-        // To camera coordinates (using View Matrix)
-        this.newNormals = this.newNormals.map(v => {
-            return Math3d.normalize(game.world.camera.getViewMatrix().multiVector(v));
-        });
     }
-    
+
+    // toViewSpace()
+    // {
+    //     //====================== Vertices =========================
+    //     // To camera coordinates (using View Matrix)
+    //     this.newVertices = this.newVertices.map(v => {
+    //         return game.world.camera.getViewMatrix().multiVector(v);
+    //     });
+
+    //     //====================== Normals ==========================
+    //     // To camera coordinates (using View Matrix)
+    //     this.newNormals = this.newNormals.map(v => {
+    //         return Math3d.normalize(game.world.camera.getViewMatrix().multiVector(v));
+    //     });
+    // }
+
+    draw(game)
+    {
+
+    }
+
     rotate(angle, axe)
     {
         if (typeof angle == 'number' && typeof axe == 'object')
@@ -87,10 +99,10 @@ export default class Entity {
     {
         if (this.mesh)
             return this.coloratePolygons();
-        
+
         return [];
     }
-    
+
     getNormals()
     {
         return this.newNormals || []

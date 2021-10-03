@@ -45,9 +45,9 @@ export function bbox(pol, width, height) // pol is Traingle here
   }
 
   return [
-    [Xmin, Ymin], 
+    [Xmin, Ymin],
     [Xmax, Ymax]
-  ] 
+  ]
 }
 
 
@@ -55,7 +55,7 @@ export function pixelContainedIn2DTraingle(v1, v2, v3, x, y, z)
 {
   if (Math.random() > 0.5)
     return true
-  else 
+  else
     return false
 }
 
@@ -95,6 +95,13 @@ function flip_vect(v1, v2)
   v2 = tmp
 }
 
+function flip_triangle(tr)
+{
+  let tmp = tr.v3
+  tr.v3 = tr.v2
+  tr.v2 = tmp
+}
+
 // drow just line from v1 to v2
 export function drawLine(v1, v2, v3, width, height, FrameBuffer, Z_Buffer)
 {
@@ -111,15 +118,15 @@ export function drawLine(v1, v2, v3, width, height, FrameBuffer, Z_Buffer)
   {
     // draw a line.
     area = Area(v1, v2, v3)            // the total area of the triangle (gon)
-    a = Area2(v2, v3, v1.x, v1.y)      // aria of triangle (v2, v3, p) 
+    a = Area2(v2, v3, v1.x, v1.y)      // aria of triangle (v2, v3, p)
     b = Area2(v3, v1, v1.x, v1.y)      // aria of triangle (v3, v1, p)
     c = Area2(v1, v2, v1.x, v1.y)      // aria of triangle (v1, v2, p)
-    
+
     a /= area
     b /= area
     c /= area
     z = a * v1.z + b * v2.z + c * v3.z
-      
+
     drawPoint(v1.x, v1.y, z, width, height, FrameBuffer, Z_Buffer)
   }
   else if (row_distance > col_distance)
@@ -138,23 +145,23 @@ export function drawLine(v1, v2, v3, width, height, FrameBuffer, Z_Buffer)
       t = (row - v1.y) / row_distance
       if (v1.x > v2.x)
         col = Math.round((-col_distance * t + v1.x))
-      else      
+      else
         col = Math.round((col_distance * t + v1.x))
-      
+
       area = Area(v1, v2, v3)  // the total area of the triangle (gon)
       if (flipped)
       {
-        a = Area2(v1, v3, col, row)      // aria of triangle (v2, v3, p) 
+        a = Area2(v1, v3, col, row)      // aria of triangle (v2, v3, p)
         b = Area2(v3, v2, col, row)      // aria of triangle (v3, v1, p)
         c = Area2(v2, v1, col, row)      // aria of triangle (v1, v2, p)
       }
       else
       {
-        a = Area2(v2, v3, col, row)      // aria of triangle (v2, v3, p) 
+        a = Area2(v2, v3, col, row)      // aria of triangle (v2, v3, p)
         b = Area2(v3, v1, col, row)      // aria of triangle (v3, v1, p)
         c = Area2(v1, v2, col, row)      // aria of triangle (v1, v2, p)
       }
-      
+
       a /= area
       b /= area
       c /= area
@@ -188,13 +195,13 @@ export function drawLine(v1, v2, v3, width, height, FrameBuffer, Z_Buffer)
       area = Area(v1, v2, v3)  // the total area of the triangle (gon)
       if (flipped)
       {
-        a = Area2(v1, v3, col, row)      // aria of triangle (v2, v3, p) 
+        a = Area2(v1, v3, col, row)      // aria of triangle (v2, v3, p)
         b = Area2(v3, v2, col, row)      // aria of triangle (v3, v1, p)
         c = Area2(v2, v1, col, row)      // aria of triangle (v1, v2, p)
       }
       else
       {
-        a = Area2(v2, v3, col, row)      // aria of triangle (v2, v3, p) 
+        a = Area2(v2, v3, col, row)      // aria of triangle (v2, v3, p)
         b = Area2(v3, v1, col, row)      // aria of triangle (v3, v1, p)
         c = Area2(v1, v2, col, row)      // aria of triangle (v1, v2, p)
       }
@@ -218,7 +225,7 @@ export function drawPoint(x, y, z, width, height, FrameBuffer, Z_Buffer)
     return;
 
   let index = y * width + x
-  if (z >= Z_Buffer[index])
+  if (z <= Z_Buffer[index])
   {
       Z_Buffer[index] = z // distance from camera to the traingle
       let [R, G, B, A] = Configs.render.strokeStyle
@@ -232,7 +239,10 @@ export function drawPoint(x, y, z, width, height, FrameBuffer, Z_Buffer)
 
 export function perpendicularOnTr(tr)
 {
-  return normalize(tr.v1.cross(tr.v2))
+  let AB = tr.v1.multi(-1).add(tr.v2)
+  let AC = tr.v1.multi(-1).add(tr.v3)
+  return normalize(AB.cross(AC))
+  //return normalize(tr.v1.cross(tr.v2))
 }
 
 
@@ -273,6 +283,18 @@ export class Vector4 {
       this.z * num,
       this.w
     );
+  }
+
+  multiMatrix(m)
+  {
+    let v = new Vector4(
+      this.x * m.m[0][0] + this.y * m.m[1][0] + this.z * m.m[2][0] + this.w * m.m[3][0],
+      this.x * m.m[0][1] + this.y * m.m[1][1] + this.z * m.m[2][1] + this.w * m.m[3][1],
+      this.x * m.m[0][2] + this.y * m.m[1][2] + this.z * m.m[2][2] + this.w * m.m[3][2],
+      this.x * m.m[0][3] + this.y * m.m[1][3] + this.z * m.m[2][3] + this.w * m.m[3][3]
+      );
+
+    return new Vector4(v.x * v.w, v.y * v.w, v.z * v.w, 1.0 / v.w)
   }
 }
 
@@ -400,7 +422,7 @@ export function rotateZ(v, angle) {
   let tmp = Math.cos(angle) * v.x - Math.sin(angle) * v.y;
   v.y = Math.sin(angle) * v.x + Math.cos(angle) * v.y;
   v.x = tmp;
-  
+
   /*   return new Vector3(
     Math.cos(angle) * v.x - Math.sin(angle) * v.y,
     Math.sin(angle) * v.x + Math.cos(angle) * v.y
@@ -411,21 +433,42 @@ export function rotateZ(v, angle) {
     FOV, width, height, far, near, vector
     hw float: means width / height
 */
+// fovX, hw=Height/Width
+export function makeFrustum(fov, hw, near, far)
+{
+  const DEG2RAD = 3.14159265 / 180
+  let tangent = Math.tan(fov * 0.5 * DEG2RAD)
+  let half_width = near * tangent
+  let half_height = half_width * hw
 
-export function perspective(fov, wh, near, far, v) {
-  /* return new Vector3(
-    v.x / (Math.tan(radians(fov) / 2) * wh),
-    v.y / Math.tan(radians(fov) / 2),
-    far / (far - near) * v.z + 1
-  ); */
-  return new Matrix4([
-    [1 / (Math.tan(fov * 0.5) * wh),  0,                          0,                          0],
-    [0,                               1 / Math.tan(fov * 0.5),    0,                          0],
-    [0,                               0,                          far / (far - near),         1],
-    [0,                               0,                          near * far / (near - far),  0]
-  ]);
+  return myFrastum(-half_width, half_width, -half_height, half_height, near, far)
 }
 
+// perspective frustum
+// params: left, right, bottom, top, near, far
+export function myFrastum(l, r, b, t, n, f)
+{
+ return new Matrix4([
+   [2*n/(r-l),      0,          (r+l)/(r-l),        0],
+   [0,              2*n/(t-b),  (t+b)/(t-b),        0],
+   [0,              0,          -(f+n)/(f-n),       2*f*n/(n-f)],
+   [0,              0,          -1,                 0]
+ ])
+}
+
+// orthographic frustum
+// params: left, right, bottom, top, near, far
+export function orthoFrustum(l, r, b, t, n, f)
+{
+  return new Matrix4([
+    [2/(r-l),       0,            0,                  (r+l)/(l-r)],
+    [0,             2/(t-b),      0,                  (t+b)/(b-t)],
+    [0,             0,            -2/(f-n),           (f+n)/(n-f)],
+    [0,             0,            0,                  0]
+  ])
+}
+
+// LookAt Matrix is ModelView matrix
 export function createLookAt(eye, target, up) {
   let F = normalize(eye.sub(target));
   let R = normalize(up.cross(F));
@@ -442,6 +485,21 @@ export function createLookAt(eye, target, up) {
       [0,     0,   0,   1]
     ]);
 }
+
+// fov in radians
+// export function perspective(fov, wh, near, far, v) {
+//   /* return new Vector3(
+//     v.x / (Math.tan(radians(fov) / 2) * wh),
+//     v.y / Math.tan(radians(fov) / 2),
+//     far / (far - near) * v.z + 1
+//   ); */
+//   return new Matrix4([
+//     [1 / (Math.tan(fov * 0.5) * wh),  0,                          0,                          0],
+//     [0,                               1 / Math.tan(fov * 0.5),    0,                          0],
+//     [0,                               0,                          far / (far - near),         1],
+//     [0,                               0,                          near * far / (near - far),  0]
+//   ]);
+// }
 
 export function normalize (v) {
   let normal = Math.sqrt(v.x * v.x + v.y * v.y + v.z * v.z);
@@ -486,7 +544,7 @@ export class Matrix4 {
       this.m[0][0] * v.x + this.m[0][1] * v.y + this.m[0][2] * v.z + this.m[0][3] * v.w,
       this.m[1][0] * v.x + this.m[1][1] * v.y + this.m[1][2] * v.z + this.m[1][3] * v.w,
       this.m[2][0] * v.x + this.m[2][1] * v.y + this.m[2][2] * v.z + this.m[2][3] * v.w,
-      this.m[3][0] * v.x + this.m[3][1] * v.y + this.m[3][2] * v.z + this.m[3][3] * v.w 
+      this.m[3][0] * v.x + this.m[3][1] * v.y + this.m[3][2] * v.z + this.m[3][3] * v.w
     );
   }
 
@@ -521,6 +579,69 @@ export class Matrix4 {
       [this.m[0][2], this.m[1][2], this.m[2][2], this.m[3][2]],
       [this.m[0][3], this.m[1][3], this.m[2][3], this.m[3][3]]
     ]);
+  }
+
+  transpose()
+  {
+    return new Matrix4([
+      [this.m[0][0], this.m[1][0], this.m[2][0], this.m[3][0]],
+      [this.m[0][1], this.m[1][1], this.m[2][1], this.m[3][1]],
+      [this.m[0][2], this.m[1][2], this.m[2][2], this.m[3][2]],
+      [this.m[0][3], this.m[1][3], this.m[2][3], this.m[3][3]]
+    ]);
+  }
+
+  inverse()
+  {
+    let _A = this.transpose().m
+    let temp,
+      N = _A.length,
+      E = [];
+
+    for (let i = 0; i < N; i++)
+      E[i] = [];
+
+    for (let i = 0; i < N; i++)
+      for (let j = 0; j < N; j++) {
+        E[i][j] = 0;
+        if (i == j)
+          E[i][j] = 1;
+      }
+
+    for (let k = 0; k < N; k++) {
+      temp = _A[k][k];
+
+      for (let j = 0; j < N; j++) {
+        _A[k][j] /= temp;
+        E[k][j] /= temp;
+      }
+
+      for (let i = k + 1; i < N; i++) {
+        temp = _A[i][k];
+
+        for (let j = 0; j < N; j++) {
+          _A[i][j] -= _A[k][j] * temp;
+          E[i][j] -= E[k][j] * temp;
+        }
+      }
+    }
+
+    for (let k = N - 1; k > 0; k--) {
+      for (let i = k - 1; i >= 0; i--) {
+        temp = _A[i][k];
+
+        for (let j = 0; j < N; j++) {
+          _A[i][j] -= _A[k][j] * temp;
+          E[i][j] -= E[k][j] * temp;
+        }
+      }
+    }
+
+    for (let i = 0; i < N; i++)
+      for (let j = 0; j < N; j++)
+        _A[i][j] = E[i][j];
+
+    return (new Matrix4(_A)).transpose();
   }
 }
 
@@ -649,6 +770,8 @@ export function clipAgainstPlane(planePos, planeNormal, pol, out)
 export function clipTrAgainstPlane(planePos, planeNormal, tr, out)
 {
   planeNormal = normalize(planeNormal);
+  let N = perpendicularOnTr(tr) // Normal of a triangle.
+  // normalsList[pol.face.vn[0]-1]
   let insidePoints = [];
   let outsidePoints = [];
 
@@ -682,30 +805,82 @@ export function clipTrAgainstPlane(planePos, planeNormal, tr, out)
     out.push(tr);
     return 1;
   }
-  
+
   if (insidePoints.length == 1 && outsidePoints.length == 2)
   {
     //tr.color = Colors.RED
-    out.push(new Triangle(
+    let tr1 = new Triangle(
       insidePoints[0],
-        intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[1]),
-        intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]),
-        tr.face,
-        tr.color
-      ));
+      intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]),
+      intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[1]),
+      tr.face,
+      tr.color
+    )
+
+    // check if N vector is in the same direction of our triangle normal
+    if (N.dot(perpendicularOnTr(tr1)) < 0)
+    {
+      //console.log('Flipping', N.dot(perpendicularOnTr(tr1)))
+      // flip triangle if N = -N(tr)
+      flip_triangle(tr1)
+    }
+    out.push(tr1)
+
     return 1;
   }
 
   if (insidePoints.length == 2 && outsidePoints.length == 1)
   {
     //tr.color = Colors.GREEN
-    let tr1 = new Triangle(insidePoints[0], insidePoints[1], intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]), tr.face, tr.color);
-    out.push(tr1);
-    //tr.color = Colors.ORANGE
-    out.push(new Triangle(tr1.v3, insidePoints[1], intersectPlane(planePos, planeNormal, insidePoints[1], outsidePoints[0]), tr.face, tr.color));
+    let tr1 = new Triangle(insidePoints[0], insidePoints[1], intersectPlane(planePos, planeNormal, insidePoints[1], outsidePoints[0]), tr.face, tr.color);
 
+    let tr2 = new Triangle(insidePoints[0], tr1.v3, intersectPlane(planePos, planeNormal, insidePoints[0], outsidePoints[0]), tr.face, tr.color)
+
+    // check if N vector is in the same direction of our triangle normal
+    if (N.dot(perpendicularOnTr(tr1)) < 0) {
+      // flip triangle if N = -N(tr)
+      flip_triangle(tr1)
+    }
+
+    // check if N vector is in the same direction of our triangle normal
+    if (N.dot(perpendicularOnTr(tr2)) < 0) {
+      // flip triangle if N = -N(tr)
+      flip_triangle(tr2)
+    }
+
+    out.push(tr1);
+    out.push(tr2);
     return 2;
   }
+}
+
+export function isInScene(tr, topPlan, buttomPlan, leftPlan, rightPlan)
+{
+  //let planeNormal = perpendicularOnTr(tr);
+
+  if (   isOutsidePlan(new Vector3(), topPlan, tr)
+      || isOutsidePlan(new Vector3(), buttomPlan, tr)
+      || isOutsidePlan(new Vector3(), leftPlan, tr)
+      || isOutsidePlan(new Vector3(), rightPlan, tr))
+  {
+    return false
+  }
+
+  return true
+}
+
+export function isOutsidePlan(planePos, planeNormal, tr)
+{
+  planeNormal = normalize(planeNormal);
+
+  let d0 = dist(planePos, planeNormal, tr.v1);
+  let d1 = dist(planePos, planeNormal, tr.v2);
+  let d2 = dist(planePos, planeNormal, tr.v3);
+
+  if (!(d0 >= 0 || d1 >= 0 || d2 >= 0)) {
+    return true
+  }
+  return false
 }
 
 export function convertQuadrantToTriangles(quad)

@@ -33,14 +33,18 @@ export default class World
 
     update()
     {
+        // convert objs coordinates to the world space.
         this.updateable.map(obj => {
             obj.update(this.game);
         })
     }
-    
+
     draw()
     {
-        this.projectionMatrix = Math3d.perspective(Math3d.radians(this.camera.fov), this.game.canvas.width / this.game.canvas.height, this.game.world.camera.near, this.game.world.camera.far);
+        //this.projectionMatrix = Math3d.perspective(Math3d.radians(this.camera.fov), this.game.canvas.width / this.game.canvas.height, this.game.world.camera.near, this.game.world.camera.far);
+
+        // fov in degeis
+        this.projectionMatrix = Math3d.makeFrustum(this.camera.fov, this.game.canvas.height / this.game.canvas.width, this.game.world.camera.near, this.game.world.camera.far);
 
         this.drawable.map(obj => {
             if (obj.mesh.found)
@@ -50,7 +54,7 @@ export default class World
                 //this.polygonsList = this.polygonsList.concat(obj.getPolygons());
             }
         });
-        
+
         this.game.render.renderWorld(this.drawable)
     }
 }

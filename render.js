@@ -12,7 +12,8 @@ export default class Render
         this.game = game;
         this.Z_Buffer = null
         this.FrameBuffer = null
-        this.MAX_ZBUFFER_SIZE = -Infinity
+        this.MAX_ZBUFFER_SIZE = 1
+        this.MIN_ZBUFFER_SIZE = -1
         this.DEFAULT_FRAMEBUFFER_COLOR = Colors.BLACK
         //this.objects = this.game.world
         this.imgData = null
@@ -66,9 +67,9 @@ export default class Render
         this.imgData = new ImageData(this.FrameBuffer, this.game.canvas.width, this.game.canvas.height)
 
 
-        let options = {
-            //resizeQuality: "high"
-        }
+        // let options = {
+        //     //resizeQuality: "high"
+        // }
         /*createImageBitmap(imgData, options).then((imgBitmap) => {
             this.game.ctx.drawImage(imgBitmap, 0, 0, this.game.canvas.width, this.game.canvas.height)
             this.game.ctx.fillText(`FPS: ${this.game.frames.toFixed(0)}`, 10, 15)
@@ -88,6 +89,51 @@ export default class Render
         this.clearBuffers()
     }
 
+    ignoreOutsideTriangles(polygonsList) {
+        let inversedProjectionMatrix = this.game.world.projectionMatrix.inverse()
+        console.log(inversedProjectionMatrix)
+        let topPlan = inversedProjectionMatrix.multiVector(new Vector4(0, 1, 0, 1))
+        let buttomPlan = inversedProjectionMatrix.multiVector(new Vector4(0, 1, 0, 1))
+        let leftPlan = inversedProjectionMatrix.multiVector(new Vector4(-1, 0, 0, 1))
+        let rightPlan = inversedProjectionMatrix.multiVector(new Vector4(0, -1, 0, 1))
+
+        return polygonsList.filter(pol => Math3d.isInScene(pol, topPlan, buttomPlan, leftPlan, rightPlan))
+    }
+
+    toViewSpace(polygonsList, normalsList)
+    {
+        //====================== Vertices =========================
+        // To camera coordinates (using View Matrix)
+        // polygonsList = polygonsList.map(pol => {
+        //     return game.world.camera.getViewMatrix().multiVector(v);
+        // });
+
+        let viewMatrix = game.world.camera.getViewMatrix()
+        let inverseViewMatrix = viewMatrix.reverse().transpose()
+
+        polygonsList.map(pol => {
+            pol.v1 = viewMatrix.multiVector(pol.v1)
+            pol.v2 = viewMatrix.multiVector(pol.v2)
+            pol.v3 = viewMatrix.multiVector(pol.v3)
+        })
+
+        // for (let i = 0; i < polygonsList.length; i++)
+        // {
+        //     polygonsList[i].v1 = viewMatrix.multiVector(polygonsList[i].v1)
+        //     polygonsList[i].v2 = viewMatrix.multiVector(polygonsList[i].v2)
+        //     polygonsList[i].v3 = viewMatrix.multiVector(polygonsList[i].v3)
+        // }
+
+        //====================== Normals ==========================
+        // To camera coordinates (using View Matrix)
+        // this.newNormals = this.newNormals.map(v => {
+        //     return Math3d.normalize(game.world.camera.getViewMatrix().multiVector(v));
+        // });
+        normalsList.map(v => {
+            v = inverseViewMatrix.multiVector(v)
+        })
+    }
+
     renderEntity(obj)
     {
         let polygonsList = obj.getPolygons()
@@ -95,13 +141,110 @@ export default class Render
         let facesList = obj.getFaces()
 
 
+        //################ Convert obj coordinates to view space (camera) ################
+        this.toViewSpace(polygonsList, normalsList)
+
+
+        //################### obj coordinates are in view space here ####################
+        if (Configs.render.clipping) {
+            // let planeNormal;
+            // let out = [];
+            // let inversedProjectionMatrix = this.game.world.projectionMatrix.inverse()
+            // let inversedCameraMatrix = this.game.world.camera.getViewMatrix().inverse()
+
+            //let M = (inversedProjectionMatrix.multi(inversedCameraMatrix))
+            //let M = this.game.world.projectionMatrix.inverse()
+            //let M = this.game.world.camera.getViewMatrix().inverse()
+            //let M = (this.game.world.projectionMatrix.multi(this.game.world.camera.getViewMatrix())).inverse()
+            //let M = (this.game.world.camera.getViewMatrix().multi(this.game.world.projectionMatrix)).inverse()
+            // let M = (this.game.world.projectionMatrix.multi(this.game.world.camera.getViewMatrix())).inverse()
+
+            //-------------- right plane ---------------
+            //planeNormal = M.multiVector(new Vector4(-1, 0, 0, 0));
+            //planeNormal = (new Vector4(-1, 0, 0, 0)).multiMatrix(M);
+            //let pos = (new Vector4(1, 0, 0, 1)).multiMatrix(M)
+
+            //planeNormal = M.multiVector(new Vector4(-1, 0, 0, 0))
+            //planeNormal = new Vector4(-1, 0, 0, 0)
+
+            // let w = this.game.canvas.width
+            // let h = this.game.canvas.height
+            // planeNormal = Math3d.normalize(
+            //         new Vector4(w / 2, h / 2, -1, 1).cross(new Vector4(w / 2, -h / 2, -1, 1))
+            //     )
+
+            // //utils.logger.log(planeNormal.w)
+            // // planeNormal.w = 1 / planeNormal.w
+            // // planeNormal.x *= planeNormal.w
+            // // planeNormal.y *= planeNormal.w
+            // // planeNormal.z *= planeNormal.w
+
+            // //let pos = M.multiVector(new Vector4(1, 0, 0, 1))
+            // let pos = new Vector4(0, 0, 0, 1)
+            // // pos.w = 1 / pos.w
+            // // pos.x *= pos.w
+            // // pos.y *= pos.w
+            // // pos.z *= pos.w
+
+            // polygonsList.map(pol => {
+            //     Math3d.clipAgainstPlane(
+            //         pos,
+            //         planeNormal, pol, out);
+            // });
+
+            // polygonsList = out;
+            // out = [];
+
+            //-------------- left plane ---------------
+            // planeNormal = reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(1, 0, 0, 1)));
+            // polygonsList.map(pol => {
+            //     Math3d.clipAgainstPlane(
+            //         reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(-1, 0, 0, 1))),
+            //         planeNormal, pol, out);
+            // });
+
+            // polygonsList = out;
+            // out = [];
+
+            //-------------- top plane ---------------
+            // planeNormal = reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(0, -1, 0, 1)));
+            // polygonsList.map(pol => {
+            //     Math3d.clipAgainstPlane(
+            //         reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(0, 1, 0, 1))),
+            //         planeNormal, pol, out);
+            // });
+
+            // polygonsList = out;
+            // out = [];
+
+            //-------------- buttom plane ---------------
+            // planeNormal = reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(0, 1, 0, 1)));
+            // polygonsList.map(pol => {
+            //     Math3d.clipAgainstPlane(
+            //         reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(0, -1, 0, 1))),
+            //         planeNormal, pol, out);
+            // });
+
+            // polygonsList = out;
+            // out = [];
+        }
+
+        //################### Ignore outside striangles  ####################
+
+        if (Configs.render.ignoreOutsideTriangles)
+        {
+            //let count = polygonsList.length
+            polygonsList = this.ignoreOutsideTriangles(polygonsList)
+            //console.log(count + ' => ' + polygonsList.length)
+        }
+
         //################### Clipping the poligons to rediuce  ####################
         //let newList = [];
         let out = [];
         let planeNormal;
         //-------------- for near plane ---------------
         polygonsList.map(pol => {
-            Math3d.clipAgainstPlane(new Vector3(0, 0, -0.6), new Vector3(0, 0, -1), pol, out);
+            Math3d.clipAgainstPlane(new Vector3(0, 0, -this.game.world.camera.near), new Vector3(0, 0, -1), pol, out);
         });
 
         polygonsList = out;
@@ -115,44 +258,6 @@ export default class Render
         polygonsList = out;
         out = [];
 
-        if (Configs.render.clipping)
-        {
-            //-------------- left plane ---------------
-            planeNormal = this.game.world.projectionMatrix.reverse().multiVector(new Vector4(-1, 0, 0, 1));
-            polygonsList.map(pol => {
-                Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
-            });
-
-            polygonsList = out;
-            out = [];
-
-            //-------------- right plane ---------------
-            planeNormal = this.game.world.projectionMatrix.reverse().multiVector(new Vector4(1, 0, 0, 1));
-            polygonsList.map(pol => {
-                Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
-            });
-
-            polygonsList = out;
-            out = [];
-
-            //-------------- top plane ---------------
-            planeNormal = this.game.world.projectionMatrix.reverse().multiVector(new Vector4(0, -1, 0, 1));
-            polygonsList.map(pol => {
-                Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
-            });
-
-            polygonsList = out;
-            out = [];
-
-            //-------------- buttom plane ---------------
-            planeNormal = this.game.world.projectionMatrix.reverse().multiVector(new Vector4(0, 1, 0, 1));
-            polygonsList.map(pol => {
-                Math3d.clipAgainstPlane(new Vector3(0, 0, 0), planeNormal, pol, out);
-            });
-
-            polygonsList = out;
-            out = [];
-        }
         //console.log('w=' + polygonsList[0].v1.w);
 
         //################### From Now on You Are Dealing just with poligons on the screen #################
@@ -184,7 +289,7 @@ export default class Render
         })
 
         //################### Project the all poligons to the seen #################
-        //-------------- projection (Perspective projection) -------------
+        //projection (Perspective projection) to Normalized Device Coordinates(NDC)(-1 to 1 in all 3 axes)
         polygonsList = polygonsList.map(pol => {
 
             pol.v1 = this.game.world.projectionMatrix.multiVector(pol.v1);
@@ -216,6 +321,10 @@ export default class Render
         //console.log(polygonsList)
 
         polygonsList.map(pol => {
+
+            // pol.v1.x = width * 0.5 * pol.v1.x + (pol.v1.x + width * 0.5)
+            // pol.v1.y = height * 0.5 * pol.v1.y + (pol.v1.y + height * 0.5)
+            // pol.v1.z =
 
             // convert from 0 to 1 to screen scall (in pixels)
             pol.v1.x = Math.round(pol.v1.x * width + width*0.5)
@@ -272,7 +381,9 @@ export default class Render
 
                             // pixel position
                             index = (y * width + x)
-                            if (z > this.Z_Buffer[index])
+
+                            //utils.logger.log(this.Z_Buffer[index])
+                            if (z < this.Z_Buffer[index])
                             {
                                 //this.Z_Buffer[x][y] = z // distance from camera to the traingle
                                 //this.FrameBuffer[x][y] = pol.color

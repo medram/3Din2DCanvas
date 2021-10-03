@@ -24,18 +24,18 @@ export class Camera extends Entity
         this.pitch = pitch; // 0
         this.yaw = yaw; // -90
     }
-    
+
     // v means point in space
     getDirection(v)
     {
         return Math3d.normalize(v.sub(this.pos));
     }
-    
+
     getViewMatrix()
     {
         return this.viewMatrix;
     }
-    
+
     updateViewMatrix()
     {
         if (this.pitch > 89)
@@ -43,13 +43,13 @@ export class Camera extends Entity
         if (this.pitch < -89)
             this.pitch = -89;
 
-        
+
 
         this.front.x = Math.cos(Math3d.radians(this.yaw)) * Math.cos(Math3d.radians(this.pitch));
         this.front.y = Math.sin(Math3d.radians(this.pitch));
         this.front.z = Math.sin(Math3d.radians(this.yaw)) * Math.cos(Math3d.radians(this.pitch));
         this.front = Math3d.normalize(this.front);
-        
+
         this.viewMatrix = Math3d.createLookAt(this.pos, this.pos.add(this.front), this.up);
     }
 
@@ -93,25 +93,25 @@ export class Camera extends Entity
         // look up
         if (game.input.keypress(Keyboard.KEY_ARROW_UP)) {
             //console.log('pitch Rotate Camera');
-            this.pitch += this.speed * 3;
+            this.pitch += this.speed * 5;
         }
 
         // look down
         if (game.input.keypress(Keyboard.KEY_ARROW_DOWN)) {
             //console.log('pitch Rotate Camera');
-            this.pitch -= this.speed * 3;
+            this.pitch -= this.speed * 5;
         }
-        
+
         // turn right
         if (game.input.keypress(Keyboard.KEY_ARROW_RIGHT)) {
             //console.log('yaw Rotate Camera');
-            this.yaw += this.speed * 3;
+            this.yaw += this.speed * 5;
         }
 
         // turn left
         if (game.input.keypress(Keyboard.KEY_ARROW_LEFT)) {
             //console.log('yaw Rotate Camera');
-            this.yaw -= this.speed * 3;
+            this.yaw -= this.speed * 5;
         }
 
         this.updateViewMatrix();

@@ -18,7 +18,7 @@ function main()
 	const camera = new Camera(new Vector3(-15.5, 8, 17), 0, -45)
 	const game = new Game('my-canvas', camera);
 	window.game = game
-	
+
 	const test = new Entity('monkey.obj', new Vector3(0, 5, 0), Colors.WHITE);
 	const cube = new Entity('cube.obj', new Vector3(0, 1, 0), Colors.RED);
 	const obj = new Entity('exampleOBJ.obj', new Vector3(0, 0, -10), Colors.PURPLE);
@@ -33,21 +33,21 @@ function main()
 	game.world.setLight(light);
 	//game.world.drawable.push(light);
 	//game.world.updateable.push(light);
-	
+
 
 	game.world.drawable.push(cube);
 	game.world.updateable.push(cube);
-	
+
 	game.world.drawable.push(plane)
 	game.world.updateable.push(plane)
 
 	obj.rotate(-130, new Vector3(0, 1, 0))
 	game.world.drawable.push(obj);
 	game.world.updateable.push(obj);
-	
+
 	game.world.drawable.push(obj2);
 	game.world.updateable.push(obj2);
-	
+
 	game.world.drawable.push(obj3);
 	game.world.updateable.push(obj3);
 

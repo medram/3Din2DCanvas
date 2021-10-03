@@ -7,8 +7,9 @@ let Configs = {
         drawLines: true,
         fillStyle: Colors.GREEN,
         strokeStyle: Colors.BLACK,
-        clipping: false,
-        fakeNormals: true
+        clipping: true,
+        fakeNormals: true,
+        ignoreOutsideTriangles: false,
     },
     canvas: {
         fillStyle: HexColors.GREEN,
