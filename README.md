@@ -29,6 +29,14 @@ php -S localhost:5500
 ```
 And go to the browser & tap localhost:5500
 and there you go :D
+## Controls
+To control the camera, you could use Z, D, S, Q buttons with Up, Down, Left and Right arrows to control camera position and direction.
+In addition, you could enable/disable some modes using your keyboard number pad:
+- Clipping mode (click 2 button).
+- Fake normals mode (click 3 button).
+- Log camera info on console (click 4 button).
+- Draw lines (click 5 button).
+- Fill triangles (click 6 button).
 
 # Screensots:
 
