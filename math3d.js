@@ -451,7 +451,7 @@ export function myFrastum(l, r, b, t, n, f)
  return new Matrix4([
    [2*n/(r-l),      0,          (r+l)/(r-l),        0],
    [0,              2*n/(t-b),  (t+b)/(t-b),        0],
-   [0,              0,          -(f+n)/(f-n),       2*f*n/(n-f)],
+   [0,              0,          (f+n)/(n-f),       2*f*n/(n-f)],
    [0,              0,          -1,                 0]
  ])
 }
@@ -463,8 +463,8 @@ export function orthoFrustum(l, r, b, t, n, f)
   return new Matrix4([
     [2/(r-l),       0,            0,                  (r+l)/(l-r)],
     [0,             2/(t-b),      0,                  (t+b)/(b-t)],
-    [0,             0,            -2/(f-n),           (f+n)/(n-f)],
-    [0,             0,            0,                  0]
+    [0,             0,            2/(n-f),           (f+n)/(n-f)],
+    [0,             0,            0,                  1]
   ])
 }
 
