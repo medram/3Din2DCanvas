@@ -7,9 +7,9 @@ let Configs = {
         drawLines: true,
         fillStyle: Colors.GREEN,
         strokeStyle: Colors.BLACK,
-        clipping: true,
         fakeNormals: true,
-        ignoreOutsideTriangles: false,
+        clipping: false,
+        culling: true, // ignoreOutsideTriangles (outside view space)
     },
     canvas: {
         fillStyle: HexColors.GREEN,

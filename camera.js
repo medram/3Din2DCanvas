@@ -36,7 +36,7 @@ export class Camera extends Entity
         return this.viewMatrix;
     }
 
-    getPlanesNormals(w, h)
+    get4PlanesNormals(w, h)
     {
         // let w = this.game.canvas.width
         // let h = this.game.canvas.height
@@ -136,25 +136,25 @@ export class Camera extends Entity
         // look up
         if (game.input.keypress(Keyboard.KEY_ARROW_UP)) {
             //console.log('pitch Rotate Camera');
-            this.pitch += this.speed * 5;
+            this.pitch += this.speed * 10;
         }
 
         // look down
         if (game.input.keypress(Keyboard.KEY_ARROW_DOWN)) {
             //console.log('pitch Rotate Camera');
-            this.pitch -= this.speed * 5;
+            this.pitch -= this.speed * 10;
         }
 
         // turn right
         if (game.input.keypress(Keyboard.KEY_ARROW_RIGHT)) {
             //console.log('yaw Rotate Camera');
-            this.yaw += this.speed * 5;
+            this.yaw += this.speed * 10;
         }
 
         // turn left
         if (game.input.keypress(Keyboard.KEY_ARROW_LEFT)) {
             //console.log('yaw Rotate Camera');
-            this.yaw -= this.speed * 5;
+            this.yaw -= this.speed * 10;
         }
 
         this.updateViewMatrix();

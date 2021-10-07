@@ -90,15 +90,69 @@ export default class Render
         this.clearBuffers()
     }
 
-    ignoreOutsideTriangles(polygonsList) {
-        let inversedProjectionMatrix = this.game.world.projectionMatrix.inverse()
-        console.log(inversedProjectionMatrix)
-        let topPlan = inversedProjectionMatrix.multiVector(new Vector4(0, 1, 0, 1))
-        let buttomPlan = inversedProjectionMatrix.multiVector(new Vector4(0, 1, 0, 1))
-        let leftPlan = inversedProjectionMatrix.multiVector(new Vector4(-1, 0, 0, 1))
-        let rightPlan = inversedProjectionMatrix.multiVector(new Vector4(0, -1, 0, 1))
+    clipAgainst4Planes(polygonsList)
+    {
+        let polyCount = polygonsList.length
+        let out = [];
 
-        return polygonsList.filter(pol => Math3d.isInScene(pol, topPlan, buttomPlan, leftPlan, rightPlan))
+        let w = this.game.canvas.width
+        let h = this.game.canvas.height
+
+        let [topNormal, rightNormal, buttomNormal, leftNormal] = this.game.world.camera.get4PlanesNormals(w, h)
+
+        // plane positions
+        let pos = new Vector3(0, 0, 0)
+
+        //utils.logger.log(t.v3)
+        //utils.logger.log(planeNormal)
+
+        polygonsList.map(pol => {
+            Math3d.clipTrAgainstPlane(
+                pos,
+                rightNormal, pol, out);
+        })
+
+        polygonsList = out;
+        out = [];
+
+        polygonsList.map(pol => {
+            Math3d.clipTrAgainstPlane(
+                pos,
+                leftNormal, pol, out);
+        })
+
+        polygonsList = out;
+        out = [];
+
+        polygonsList.map(pol => {
+            Math3d.clipTrAgainstPlane(
+                pos,
+                topNormal, pol, out);
+        })
+
+        polygonsList = out;
+        out = [];
+
+        polygonsList.map(pol => {
+            Math3d.clipTrAgainstPlane(
+                pos,
+                buttomNormal, pol, out);
+        })
+
+        //console.log((polyCount - polygonsList.length) / polygonsList.length * 100, '%')
+        return out
+    }
+
+    ignoreOutsideTriangles(polygonsList) {
+        const count = polygonsList.length
+        let w = this.game.canvas.width
+        let h = this.game.canvas.height
+
+        let [topNormal, rightNormal, buttomNormal, leftNormal] = this.game.world.camera.get4PlanesNormals(w, h)
+
+        return polygonsList.filter(pol => Math3d.isInScene(pol, topNormal, rightNormal, buttomNormal, leftNormal))
+        //utils.logger.log(count + ' => ' + list.length)
+        //return list
     }
 
     toViewSpace(polygonsList, normalsList)
@@ -141,6 +195,8 @@ export default class Render
         let polygonsList = obj.getPolygons()
         let normalsList = obj.getNormals()
         let facesList = obj.getFaces()
+        let width = this.game.canvas.width
+        let height = this.game.canvas.height
 
 
         //################ Convert obj coordinates to view space (camera) ################
@@ -149,60 +205,11 @@ export default class Render
 
         //################### obj coordinates are in view space here ####################
         if (Configs.render.clipping) {
-            let polyCount = polygonsList.length
-            let out = [];
-
-            let w = this.game.canvas.width
-            let h = this.game.canvas.height
-
-            let [topNormal, rightNormal, buttomNormal, leftNormal] = this.game.world.camera.getPlanesNormals(w, h)
-
-            // plane positions
-            let pos = new Vector3(0, 0, 0)
-
-            //utils.logger.log(t.v3)
-            //utils.logger.log(planeNormal)
-
-            polygonsList.map(pol => {
-                Math3d.clipTrAgainstPlane(
-                    pos,
-                    rightNormal, pol, out);
-            })
-
-            polygonsList = out;
-            out = [];
-
-            polygonsList.map(pol => {
-                Math3d.clipTrAgainstPlane(
-                    pos,
-                    leftNormal, pol, out);
-            })
-
-            polygonsList = out;
-            out = [];
-
-            polygonsList.map(pol => {
-                Math3d.clipTrAgainstPlane(
-                    pos,
-                    topNormal, pol, out);
-            })
-
-            polygonsList = out;
-            out = [];
-
-            polygonsList.map(pol => {
-                Math3d.clipTrAgainstPlane(
-                    pos,
-                    buttomNormal, pol, out);
-            })
-
-            polygonsList = out;
-            out = [];
-            //console.log((polyCount - polygonsList.length) / polygonsList.length * 100, '%')
+            polygonsList = this.clipAgainst4Planes(polygonsList)
         }
         //################### Ignore outside striangles  ####################
 
-        if (Configs.render.ignoreOutsideTriangles)
+        if (Configs.render.culling)
         {
             //let count = polygonsList.length
             polygonsList = this.ignoreOutsideTriangles(polygonsList)
@@ -234,8 +241,6 @@ export default class Render
         //################### From Now on You Are Dealing just with poligons on the screen #################
 
         //-------------- Tweak the contrast of pols' color -------------
-        let width = this.game.canvas.width
-        let height = this.game.canvas.height
 
         let lightEntity = this.game.world.lights[0]
         // choose just the first normal
