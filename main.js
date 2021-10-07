@@ -26,7 +26,8 @@ function main()
 	const obj3 = new Entity('lowPolyTree.obj', new Vector3(6, 0, -7), Colors.GREEN);
 	const obj4 = new Entity('pine.obj', new Vector3(-7, 0, -7), Colors.GREEN);
 	const obj5 = new Entity('stall.obj', new Vector3(10, 0, 0), Colors.BLUE);
-	const plane = new Entity('plane2.obj', new Vector3(1, 0, 1), Colors.BLUE);
+	const plane = new Entity('plane4.obj', new Vector3(1, 0, 1), Colors.BLUE);
+	const obj6 = new Entity('box.obj', new Vector3(3, 1, 5), Colors.WHITE);
 
 	const light = new Light(new Vector3(1, -1, 0), new Vector3(1, 2, 1), Colors.ORANGE)
 
@@ -53,6 +54,10 @@ function main()
 
 	game.world.drawable.push(obj4);
 	game.world.updateable.push(obj4);
+
+
+	game.world.drawable.push(obj6);
+	game.world.updateable.push(obj6);
 
 
 	//test.setScale(0.2)

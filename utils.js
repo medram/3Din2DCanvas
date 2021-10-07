@@ -11,7 +11,7 @@ export function convertColor(contrast, color)
     return new Uint8Array([R, G, B, 255])
 }
 
-class Logger
+export class Logger
 {
     constructor(fps)
     {
@@ -20,14 +20,14 @@ class Logger
         this.delta = 1000 / this.fps
     }
 
-    log(str)
+    log(...str)
     {
         if (new Date().getTime() - this.time > this.delta)
         {
-            console.log(str)
+            console.log(...str)
             this.time = new Date().getTime()
         }
     }
 }
 
-export const logger = new Logger(16)
+export const logger = new Logger(5)

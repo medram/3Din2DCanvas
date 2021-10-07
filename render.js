@@ -5,6 +5,7 @@ import * as Math3d from "./math3d.js";
 import * as utils from './utils.js';
 import Colors from './colors.js'
 
+
 export default class Render
 {
     constructor(game)
@@ -136,6 +137,7 @@ export default class Render
 
     renderEntity(obj)
     {
+        //################ We are in the World space ################
         let polygonsList = obj.getPolygons()
         let normalsList = obj.getNormals()
         let facesList = obj.getFaces()
@@ -147,88 +149,57 @@ export default class Render
 
         //################### obj coordinates are in view space here ####################
         if (Configs.render.clipping) {
-            // let planeNormal;
-            // let out = [];
-            // let inversedProjectionMatrix = this.game.world.projectionMatrix.inverse()
-            // let inversedCameraMatrix = this.game.world.camera.getViewMatrix().inverse()
+            let polyCount = polygonsList.length
+            let out = [];
 
-            //let M = (inversedProjectionMatrix.multi(inversedCameraMatrix))
-            //let M = this.game.world.projectionMatrix.inverse()
-            //let M = this.game.world.camera.getViewMatrix().inverse()
-            //let M = (this.game.world.projectionMatrix.multi(this.game.world.camera.getViewMatrix())).inverse()
-            //let M = (this.game.world.camera.getViewMatrix().multi(this.game.world.projectionMatrix)).inverse()
-            // let M = (this.game.world.projectionMatrix.multi(this.game.world.camera.getViewMatrix())).inverse()
+            let w = this.game.canvas.width
+            let h = this.game.canvas.height
 
-            //-------------- right plane ---------------
-            //planeNormal = M.multiVector(new Vector4(-1, 0, 0, 0));
-            //planeNormal = (new Vector4(-1, 0, 0, 0)).multiMatrix(M);
-            //let pos = (new Vector4(1, 0, 0, 1)).multiMatrix(M)
+            let [topNormal, rightNormal, buttomNormal, leftNormal] = this.game.world.camera.getPlanesNormals(w, h)
 
-            //planeNormal = M.multiVector(new Vector4(-1, 0, 0, 0))
-            //planeNormal = new Vector4(-1, 0, 0, 0)
+            // plane positions
+            let pos = new Vector3(0, 0, 0)
 
-            // let w = this.game.canvas.width
-            // let h = this.game.canvas.height
-            // planeNormal = Math3d.normalize(
-            //         new Vector4(w / 2, h / 2, -1, 1).cross(new Vector4(w / 2, -h / 2, -1, 1))
-            //     )
+            //utils.logger.log(t.v3)
+            //utils.logger.log(planeNormal)
 
-            // //utils.logger.log(planeNormal.w)
-            // // planeNormal.w = 1 / planeNormal.w
-            // // planeNormal.x *= planeNormal.w
-            // // planeNormal.y *= planeNormal.w
-            // // planeNormal.z *= planeNormal.w
+            polygonsList.map(pol => {
+                Math3d.clipTrAgainstPlane(
+                    pos,
+                    rightNormal, pol, out);
+            })
 
-            // //let pos = M.multiVector(new Vector4(1, 0, 0, 1))
-            // let pos = new Vector4(0, 0, 0, 1)
-            // // pos.w = 1 / pos.w
-            // // pos.x *= pos.w
-            // // pos.y *= pos.w
-            // // pos.z *= pos.w
+            polygonsList = out;
+            out = [];
 
-            // polygonsList.map(pol => {
-            //     Math3d.clipAgainstPlane(
-            //         pos,
-            //         planeNormal, pol, out);
-            // });
+            polygonsList.map(pol => {
+                Math3d.clipTrAgainstPlane(
+                    pos,
+                    leftNormal, pol, out);
+            })
 
-            // polygonsList = out;
-            // out = [];
+            polygonsList = out;
+            out = [];
 
-            //-------------- left plane ---------------
-            // planeNormal = reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(1, 0, 0, 1)));
-            // polygonsList.map(pol => {
-            //     Math3d.clipAgainstPlane(
-            //         reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(-1, 0, 0, 1))),
-            //         planeNormal, pol, out);
-            // });
+            polygonsList.map(pol => {
+                Math3d.clipTrAgainstPlane(
+                    pos,
+                    topNormal, pol, out);
+            })
 
-            // polygonsList = out;
-            // out = [];
+            polygonsList = out;
+            out = [];
 
-            //-------------- top plane ---------------
-            // planeNormal = reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(0, -1, 0, 1)));
-            // polygonsList.map(pol => {
-            //     Math3d.clipAgainstPlane(
-            //         reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(0, 1, 0, 1))),
-            //         planeNormal, pol, out);
-            // });
+            polygonsList.map(pol => {
+                Math3d.clipTrAgainstPlane(
+                    pos,
+                    buttomNormal, pol, out);
+            })
 
-            // polygonsList = out;
-            // out = [];
-
-            //-------------- buttom plane ---------------
-            // planeNormal = reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(0, 1, 0, 1)));
-            // polygonsList.map(pol => {
-            //     Math3d.clipAgainstPlane(
-            //         reversedCameraMatrix.multiVector(inversedProjectionMatrix.multiVector(new Vector4(0, -1, 0, 1))),
-            //         planeNormal, pol, out);
-            // });
-
-            // polygonsList = out;
-            // out = [];
+            polygonsList = out;
+            out = [];
+            //console.log((polyCount - polygonsList.length) / polygonsList.length * 100, '%')
         }
-
         //################### Ignore outside striangles  ####################
 
         if (Configs.render.ignoreOutsideTriangles)
@@ -244,7 +215,7 @@ export default class Render
         let planeNormal;
         //-------------- for near plane ---------------
         polygonsList.map(pol => {
-            Math3d.clipAgainstPlane(new Vector3(0, 0, -this.game.world.camera.near), new Vector3(0, 0, -1), pol, out);
+            Math3d.clipTrAgainstPlane(new Vector3(0, 0, -this.game.world.camera.near), new Vector3(0, 0, -1), pol, out);
         });
 
         polygonsList = out;
@@ -252,7 +223,7 @@ export default class Render
 
         //-------------- for far plane ---------------
         polygonsList.map(pol => {
-            Math3d.clipAgainstPlane(new Vector3(0, 0, -this.game.world.camera.far), new Vector3(0, 0, 1), pol, out);
+            Math3d.clipTrAgainstPlane(new Vector3(0, 0, -this.game.world.camera.far), new Vector3(0, 0, 1), pol, out);
         });
 
         polygonsList = out;
@@ -318,27 +289,21 @@ export default class Render
             return pol;
         });
 
-        //console.log(polygonsList)
+        //############### Where are in DNC coordinates ###############
 
+        // Convert DNC coordinates to 2D space (Viewport space/screen)
         polygonsList.map(pol => {
 
-            // pol.v1.x = width * 0.5 * pol.v1.x + (pol.v1.x + width * 0.5)
-            // pol.v1.y = height * 0.5 * pol.v1.y + (pol.v1.y + height * 0.5)
-            // pol.v1.z =
-
             // convert from 0 to 1 to screen scall (in pixels)
-            pol.v1.x = Math.round(pol.v1.x * width + width*0.5)
-            pol.v1.y = Math.round(-pol.v1.y * height + height*0.5)
+            pol.v1.x = Math.round(width * (pol.v1.x + 1) * 0.5)
+            pol.v1.y = Math.round(height * (-pol.v1.y + 1) * 0.5)
             //pol.v1.z *= -1
 
-            pol.v2.x = Math.round(pol.v2.x * width + width*0.5)
-            pol.v2.y = Math.round(-pol.v2.y * height + height*0.5)
-            //pol.v2.z *= -1
+            pol.v2.x = Math.round(width * (pol.v2.x + 1) * 0.5)
+            pol.v2.y = Math.round(height * (-pol.v2.y + 1) * 0.5)
 
-            pol.v3.x = Math.round(pol.v3.x * width + width*0.5)
-            pol.v3.y = Math.round(-pol.v3.y * height + height*0.5)
-            //pol.v3.z *= -1
-            //console.log(pol)
+            pol.v3.x = Math.round(width * (pol.v3.x + 1) * 0.5)
+            pol.v3.y = Math.round(height * (-pol.v3.y + 1) * 0.5)
 
             // calculate the boundary box that wrap the triangle (v1, v2, v3)
             let [Vmin, Vmax] = Math3d.bbox(pol, width, height)

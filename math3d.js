@@ -4,6 +4,8 @@ import Configs from './configs.js'
 
 export default null
 
+export const DEG2RAD = 3.14159265 / 180
+
 /*
   n is a float number
   return should be bitween 0 and 1
@@ -249,10 +251,10 @@ export function perpendicularOnTr(tr)
 
 export class Vector4 {
   constructor (x = 0 , y = 0 , z = 0 , w = 1) {
-    this.x = parseFloat(x);
-    this.y = parseFloat(y);
-    this.z = parseFloat(z);
-    this.w = parseFloat(w);
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.w = w;
   }
 
   dot (v) {
@@ -301,9 +303,9 @@ export class Vector4 {
 export class Vector3 {
   constructor (x = 0 , y = 0 , z = 0) {
     //console.log(x, y, z);
-    this.x = parseFloat(x);
-    this.y = parseFloat(y);
-    this.z = parseFloat(z);
+    this.x = x;
+    this.y = y;
+    this.z = z;
   }
 
   dot (v) {
@@ -337,8 +339,8 @@ export class Vector3 {
 
 export class Vector2 {
   constructor (x = 0 , y = 0) {
-    this.x = parseFloat(x)
-    this.y = parseFloat(y)
+    this.x = x
+    this.y = y
   }
 
   dot (v) {
