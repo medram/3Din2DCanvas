@@ -2,6 +2,8 @@
 Hi there!
 I've just created the 3D from scratch in 2D canvas (reinventing the wheel) using just pure Javascript, Based on some 3D algorithms.
 
+![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_1.png)
+
 # Features:
 This 3D supports the folowing features:
 - Z Buffer for depth testing.
@@ -44,8 +46,6 @@ In addition, you could enable/disable some modes using your keyboard number pad:
 You could check out browser's console for log.
 
 # Screensots:
-
-![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_1.png)
 
 ![](https://raw.githubusercontent.com/medram/3Din2DCanvas/master/imgs/cover_2.png)
 
